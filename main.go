@@ -7,8 +7,20 @@ import (
 	"teste/cmd/scripts"
 )
 
+const participantsFile = "participants.json"
+
 func main() {
-	scripts.LoadParticipantsAndCreateRepos("participants.json")
+	if len(os.Args) < 2 {
+		log.Fatalf("Usage: %s [create|delete]", os.Args[0])
+	}
+	switch os.Args[1] {
+	case "create":
+		scripts.LoadParticipantsAndCreateRepos(participantsFile)
+	case "delete":
+		scripts.LoadParticipantsAndDeleteRepos(participantsFile)
+	default:
+		log.Fatalf("Usage: %s [create|delete]", os.Args[0])
+	}
 }
 
 func init() {

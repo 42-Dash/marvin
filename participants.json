@@ -1,15 +1,15 @@
 {
     "teams": [
         {
-            "name": "Pirates of the Caribbean",
+            "name": "Pirates-of-the-Caribbean",
             "members": ["jsparov", "uterner"]
         },
         {
-            "name": "The Avengers",
+            "name": "The-Avengers",
             "members": ["thor", "ironman"]
         },
         {
-            "name": "The Justice League",
+            "name": "The-Justice-League",
             "members": ["superman"]
         }
     ]
