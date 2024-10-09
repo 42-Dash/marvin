@@ -23,18 +23,19 @@ func main() {
 	}
 }
 
+// Checks if all required environment variables are set.
 func init() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	const (
-		access = "GITHUB_ACCESS"
-		org    = "GITHUB_ORGANISATION"
-	)
+	var variables []string = []string{
+		"GITHUB_ACCESS",
+		"GITHUB_ORGANISATION",
+	}
 
-	for _, env := range []string{access, org} {
+	for _, env := range variables {
 		if os.Getenv(env) == "" {
 			log.Fatalf("Error: %s not found in .env", env)
 		}

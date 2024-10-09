@@ -6,8 +6,14 @@ import (
 	"teste/cmd/parser"
 )
 
+// Loads the participants from the given file and deletes the repositories.
+//
+// Parameters:
+//   - filename: The name of the file to load the participants from.
+//
+// The function uses logs to print the status of the operation.
 func LoadParticipantsAndDeleteRepos(filename string) {
-	participants, err := parser.LoadParticipants(filename)
+	participants, err := parser.LoadParticipantsJSON(filename)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
@@ -22,8 +28,14 @@ func LoadParticipantsAndDeleteRepos(filename string) {
 	}
 }
 
+// Loads the participants from the given file and creates the repositories.
+//
+// Parameters:
+//   - filename: The name of the file to load the participants from.
+//
+// The function uses logs to print the status of the operation.
 func LoadParticipantsAndCreateRepos(filename string) {
-	participants, err := parser.LoadParticipants(filename)
+	participants, err := parser.LoadParticipantsJSON(filename)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
