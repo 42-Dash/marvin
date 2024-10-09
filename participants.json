@@ -1,16 +1,16 @@
 {
     "teams": [
         {
-            "name": "Pirates-of-the-Caribbean",
-            "members": ["jsparov", "uterner"]
+            "name": "The-Avengers",
+            "members": ["nzagorulko18"]
         },
         {
-            "name": "The-Avengers",
-            "members": ["thor", "ironman"]
+            "name": "Pirates-of-the-Caribbean",
+            "members": ["nzagorulko18", "LuckyIntegral"]
         },
         {
             "name": "The-Justice-League",
-            "members": ["superman"]
+            "members": ["nzagorulko18"]
         }
     ]
 }

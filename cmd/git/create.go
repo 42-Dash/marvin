@@ -16,7 +16,7 @@ func createRepoUrl() string {
 }
 
 // Returns an error message based on the status code.
-func getCreateRepoErrorMessage(statusCode int) string {
+func createRepoErrorMessage(statusCode int) string {
 	switch statusCode {
 	case http.StatusForbidden:
 		return "forbidden"
@@ -54,7 +54,7 @@ func CreateRepo(name string, is_private bool) error {
 	if res.StatusCode != http.StatusCreated {
 		return fmt.Errorf("cannot create repository %s: %s",
 			name,
-			getCreateRepoErrorMessage(res.StatusCode),
+			createRepoErrorMessage(res.StatusCode),
 		)
 	}
 	return nil

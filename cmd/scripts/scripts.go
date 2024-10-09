@@ -44,8 +44,14 @@ func LoadParticipantsAndCreateRepos(filename string) {
 		err := git.CreateRepo(team.Name, true)
 		if err != nil {
 			log.Printf("Error creating repo for team %s: %v", team.Name, err)
+			continue
+		}
+		log.Printf("Successfully created repo for team %s", team.Name)
+		err = git.AddCollaborators(team.Name, team.Nicknames)
+		if err != nil {
+			log.Printf("Error adding collaborators to team %s: %v", team.Name, err)
 		} else {
-			log.Printf("Successfully created repo for team %s", team.Name)
+			log.Printf("Successfully added collaborators to team %s", team.Name)
 		}
 	}
 }
