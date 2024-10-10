@@ -4,6 +4,7 @@ import (
 	"log"
 	"teste/cmd/git"
 	"teste/cmd/parser"
+	"github.com/schollz/progressbar/v3"
 )
 
 // Loads the participants from the given file and deletes the repositories.
@@ -12,11 +13,8 @@ import (
 //   - filename: The name of the file to load the participants from.
 //
 // The function uses logs to print the status of the operation.
-func DeleteRepos(filename string) {
-	participants, err := parser.LoadParticipantsJSON(filename)
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
+func DeleteRepos(participants parser.Participants) {
+	bar := progressbar.Default(int64(len(participants.Teams)))
 
 	for _, team := range participants.Teams {
 		err := git.DeleteRepo(team.Name)
@@ -25,6 +23,7 @@ func DeleteRepos(filename string) {
 		} else {
 			log.Printf("Successfully deleted repo for team %s", team.Name)
 		}
+		bar.Add(1)
 	}
 }
 
@@ -34,11 +33,8 @@ func DeleteRepos(filename string) {
 //   - filename: The name of the file to load the participants from.
 //
 // The function uses logs to print the status of the operation.
-func CreateRepos(filename string) {
-	participants, err := parser.LoadParticipantsJSON(filename)
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
+func CreateRepos(participants parser.Participants) {
+	bar := progressbar.Default(int64(len(participants.Teams)))
 
 	for _, team := range participants.Teams {
 		err := git.CreateRepo(team.Name, true)
@@ -53,6 +49,7 @@ func CreateRepos(filename string) {
 		} else {
 			log.Printf("Successfully added collaborators to team %s", team.Name)
 		}
+		bar.Add(1)
 	}
 }
 
@@ -62,18 +59,16 @@ func CreateRepos(filename string) {
 //   - filename: The name of the file to load the participants from.
 //
 // The function uses logs to print the status of the operation.
-func SetReposReadOnly(filename string) {
-	participants, err := parser.LoadParticipantsJSON(filename)
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
+func SetReposReadOnly(participants parser.Participants) {
+	bar := progressbar.Default(int64(len(participants.Teams)))
 
 	for _, team := range participants.Teams {
-		err = git.SetCollaborators(team.Name, team.Nicknames, git.READ)
+		err := git.SetCollaborators(team.Name, team.Nicknames, git.READ)
 		if err != nil {
 			log.Printf("Error restricting collaborators for team %s: %v", team.Name, err)
 		} else {
 			log.Printf("Successfully restricted collaborators for team %s", team.Name)
 		}
+		bar.Add(1)
 	}
 }
