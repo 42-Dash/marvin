@@ -1,4 +1,4 @@
-module teste
+module dashinette
 
 go 1.23.1
 

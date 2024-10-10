@@ -1,57 +1,21 @@
 package cli
 
 import (
+	"dashinette/pkg/parser"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
-	"teste/cmd/parser"
-	"teste/cmd/scripts"
 
 	"github.com/manifoldco/promptui"
 )
 
-// initTemplate is the template for the initial prompt header.
-const initTemplate = `+---------------------------------------------+
-| Please enter the path to your               |
-| participants.json file to get started.      |
-+---------------------------------------------+
-`
-
-// PromptParticipantsFile prompts the user to enter the path to the participants file.
-//
-// Returns:
-//   - string: The path to the participants file.
-func PromptParticipantsFile() string {
-	rerenderHeader(initTemplate)
-
-	prompt := promptui.Prompt{
-		Label: "> ",
-		Validate: func(input string) error {
-			if len(input) < 5 || input[len(input)-5:] != ".json" {
-				return fmt.Errorf("invalid file format: %s", input)
-			}
-			if _, err := os.Stat(input); os.IsNotExist(err) {
-				return fmt.Errorf("file not found: %s", input)
-			}
-			return nil
-		},
-	}
-
-	result, err := prompt.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return result
-}
-
 // Constants for the different options in the CLI.
 const (
-	CreateRepoValue = "Create a repository"
-	DeleteRepoValue = "Delete a repository"
+	CreateRepoValue       = "Create repositories"
+	DeleteRepoValue       = "Delete repositories"
 	SetReposReadOnlyValue = "Set repositories to read-only"
-	ExitValue = "Exit"
+	ExitValue             = "Exit"
 )
 
 // headerTemplate is the template for the header of the CLI.
@@ -70,9 +34,9 @@ const headerTemplate = `+---------------------------------------------+
 
 // rerenderHeader clears the terminal and prints the header.
 func rerenderHeader(header string) {
-    cmd := exec.Command("clear")
-    cmd.Stdout = os.Stdout
-    cmd.Run()
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 
 	fmt.Print(header)
 }
@@ -104,11 +68,11 @@ func InteractiveCLI(settings parser.Participants) {
 
 		switch result {
 		case CreateRepoValue:
-			scripts.CreateRepos(settings)
+			createRepos(settings)
 		case DeleteRepoValue:
-			scripts.DeleteRepos(settings)
+			deleteRepos(settings)
 		case SetReposReadOnlyValue:
-			scripts.SetReposReadOnly(settings)
+			setReposReadOnly(settings)
 		case ExitValue:
 			fmt.Println("Goodbye!")
 			os.Exit(0)
