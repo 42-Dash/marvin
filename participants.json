@@ -1,0 +1,16 @@
+{
+    "teams": [
+        {
+            "name": "The-Avengers",
+            "members": ["nzagorulko18"]
+        },
+        {
+            "name": "Pirates-of-the-Caribbean",
+            "members": ["nzagorulko18", "LuckyIntegral"]
+        },
+        {
+            "name": "The-Justice-League",
+            "members": ["nzagorulko18"]
+        }
+    ]
+}
