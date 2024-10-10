@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// Returns the URL to add a collaborator to a repository.
-func addCollaboratorsURL(repo string, nickname string) string {
+// Returns the URL endpoint to perform crud over collaborators.
+func setCollaboratorsURL(repo string, nickname string) string {
 	return fmt.Sprintf(
 		"https://api.github.com/repos/%s/%s/collaborators/%s",
 		os.Getenv("GITHUB_ORGANISATION"),
@@ -17,12 +17,14 @@ func addCollaboratorsURL(repo string, nickname string) string {
 }
 
 // Returns an error message based on the status code.
-func addCollaboratorsErrorMessage(statusCode int) string {
+func setCollaboratorsErrorMessage(statusCode int) string {
 	switch statusCode {
 	case http.StatusForbidden:
 		return "forbidden"
 	case http.StatusNotFound:
 		return "not found"
+	case http.StatusUnprocessableEntity:
+		return "unprocessable entity"
 	default:
 		return "unexpected status code"
 	}
@@ -33,15 +35,21 @@ func addCollaboratorsErrorMessage(statusCode int) string {
 // Parameters:
 //   - repo: The name of the repository.
 //   - usernames: A list of usernames to add as collaborators.
+//   - pemission: The permission level for the collaborators. (PUSH or READ in this case)
 //
 // Returns:
 //   - error: An error object if an error occurred, otherwise nil.
-func AddCollaborators(repo string, usernames []string) error {
+func SetCollaborators(
+	repo string,
+	usernames []string,
+	pemission string,
+) error {
+	payload := []byte(fmt.Sprintf("{\"permission\":\"%s\"}", pemission))
 	var errs string
 
 	for _, username := range usernames {
-		url := addCollaboratorsURL(repo, username)
-		req, err := sendRequest(http.MethodPut, url, nil)
+		url := setCollaboratorsURL(repo, username)
+		req, err := sendRequest(http.MethodPut, url, payload)
 		if err != nil {
 			// this structure is repeated in the other functions as well
 			// TODO: think about how you can refactor this
@@ -56,7 +64,7 @@ func AddCollaborators(repo string, usernames []string) error {
 		if req.StatusCode != http.StatusCreated && req.StatusCode != http.StatusNoContent {
 			errorMessage := fmt.Errorf("cannot add collaborator %s: %s",
 				username,
-				addCollaboratorsErrorMessage(req.StatusCode),
+				setCollaboratorsErrorMessage(req.StatusCode),
 			)
 			if len(errs) == 0 {
 				errs = errorMessage.Error()

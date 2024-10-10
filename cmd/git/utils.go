@@ -7,6 +7,14 @@ import (
 	"os"
 )
 
+// The permission levels for collaborators.
+const (
+	// The collaborator can push to the repository.
+	PUSH = "push"
+	// The collaborator can read only from the repository.
+	READ = "read"
+)
+
 // Creates an authenticated request to the GitHub API.
 //
 // Parameters:
