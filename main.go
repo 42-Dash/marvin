@@ -4,25 +4,23 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"teste/cmd/scripts"
+	"teste/cmd/cli"
+	"teste/cmd/parser"
 )
 
-const participantsFile = "participants.json"
+// TODO: Think about the best way to handle the participants file.
+// const participantsFile = "participants.json"
 
+// Main function to start the CLI.
+// It prompts the user to enter the path to the participants file.
+// Then it loads the participants and starts the interactive CLI.
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatalf("Usage: %s [create|delete|restrict]", os.Args[0])
+	participantsFile := cli.PromptParticipantsFile()
+	participants, err := parser.LoadParticipantsJSON(participantsFile)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
 	}
-	switch os.Args[1] {
-	case "create":
-		scripts.CreateRepos(participantsFile)
-	case "delete":
-		scripts.DeleteRepos(participantsFile)
-	case "restrict":
-		scripts.SetReposReadOnly(participantsFile)
-	default:
-		log.Fatalf("Usage: %s [create|delete]", os.Args[0])
-	}
+	cli.InteractiveCLI(participants)
 }
 
 // Checks if all required environment variables are set.
