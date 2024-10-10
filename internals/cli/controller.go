@@ -13,7 +13,7 @@ import (
 // Constants for the different options in the CLI.
 const (
 	CreateRepoValue       = "Create repositories"
-	DeleteRepoValue       = "Delete repositories"
+	AddCollaboratorValue  = "Add collaborator (push access)"
 	SetReposReadOnlyValue = "Set repositories to read-only"
 	ExitValue             = "Exit"
 )
@@ -26,7 +26,7 @@ const headerTemplate = `+---------------------------------------------+
 |                                             |
 | Through this CLI you can:                   |
 | - Create repositories in your organization  |
-| - Delete repositories in your organization  |
+| - Add collaborators to repositories         |
 | - Modify collaborator permissions           |
 |                                             |
 +---------------------------------------------+
@@ -52,7 +52,7 @@ func InteractiveCLI(settings parser.Participants) {
 		Label: "Select an option",
 		Items: []string{
 			CreateRepoValue,
-			DeleteRepoValue,
+			AddCollaboratorValue,
 			SetReposReadOnlyValue,
 			ExitValue,
 		},
@@ -69,8 +69,8 @@ func InteractiveCLI(settings parser.Participants) {
 		switch result {
 		case CreateRepoValue:
 			createRepos(settings)
-		case DeleteRepoValue:
-			deleteRepos(settings)
+		case AddCollaboratorValue:
+			addCollaborators(settings)
 		case SetReposReadOnlyValue:
 			setReposReadOnly(settings)
 		case ExitValue:

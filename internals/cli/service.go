@@ -6,23 +6,6 @@ import (
 	"log"
 )
 
-// Loads the participants from the given file and deletes the repositories.
-//
-// Parameters:
-//   - filename: The name of the file to load the participants from.
-//
-// The function uses logs to print the status of the operation.
-func deleteRepos(participants parser.Participants) {
-	for _, team := range participants.Teams {
-		err := github.DeleteRepo(team.Name)
-		if err != nil {
-			log.Printf("Error deleting repo for team %s: %v", team.Name, err)
-		} else {
-			log.Printf("Successfully deleted repo for team %s", team.Name)
-		}
-	}
-}
-
 // Loads the participants from the given file and creates the repositories.
 //
 // Parameters:
@@ -34,10 +17,21 @@ func createRepos(participants parser.Participants) {
 		err := github.CreateRepo(team.Name, true)
 		if err != nil {
 			log.Printf("Error creating repo for team %s: %v", team.Name, err)
-			continue
+		} else {
+			log.Printf("Successfully created repo for team %s", team.Name)
 		}
-		log.Printf("Successfully created repo for team %s", team.Name)
-		err = github.SetCollaborators(team.Name, team.Nicknames, github.PUSH)
+	}
+}
+
+// Loads the participants from the given file and adds the collaborators.
+//
+// Parameters:
+//   - filename: The name of the file to load the participants from.
+//
+// The function uses logs to print the status of the operation.
+func addCollaborators(participants parser.Participants) {
+	for _, team := range participants.Teams {
+		err := github.SetCollaborators(team.Name, team.Nicknames, github.PUSH)
 		if err != nil {
 			log.Printf("Error adding collaborators to team %s: %v", team.Name, err)
 		} else {
