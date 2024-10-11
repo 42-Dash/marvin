@@ -1,0 +1,32 @@
+version: '3'
+
+tasks:
+  run:
+    desc: Run the project
+    cmds:
+      - task build
+      - ./dashinette
+
+  build:
+    desc: Build the project
+    cmds:
+      - go build -o dashinette main.go
+
+  clean:
+    desc: Clean the project
+    cmds:
+      - rm -f dashinette
+
+  clean-up:
+    desc: Clean up the project
+    cmds:
+      - go run scripts/deleteRepos.go
+
+  help:
+    desc: Show this help message
+    cmds:
+      - echo "build - build the project"
+      - echo "run - run the project"
+      - echo "clean - clean the project"
+      - echo "clean-up - clean up the project"
+      - echo "help - show this help message"

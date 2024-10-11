@@ -57,14 +57,14 @@ func InteractiveCLI(settings parser.Participants) {
 			ExitValue,
 		},
 	}
+	rerenderHeader(headerTemplate)
 
 	for {
-		rerenderHeader(headerTemplate)
-
 		_, result, err := prompt.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
+		rerenderHeader(headerTemplate)
 
 		switch result {
 		case CreateRepoValue:
