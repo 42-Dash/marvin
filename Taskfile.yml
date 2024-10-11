@@ -1,10 +1,16 @@
 version: '3'
 
 tasks:
-  run:
+  default:
     desc: Run the project
     cmds:
-      - task build
+      - task run
+
+  run:
+    desc: Run the project after building
+    cmds:
+      - task: build
+      - defer: { task: clean }
       - ./dashinette
 
   build:
@@ -17,16 +23,17 @@ tasks:
     cmds:
       - rm -f dashinette
 
-  clean-up:
-    desc: Clean up the project
+  clean-repos:
+    desc: Remove the organization repositories
     cmds:
       - go run scripts/deleteRepos.go
 
   help:
+    silent: true
     desc: Show this help message
     cmds:
       - echo "build - build the project"
-      - echo "run - run the project"
+      - echo "run - build and run the project"
       - echo "clean - clean the project"
-      - echo "clean-up - clean up the project"
+      - echo "clean-repos - remove the organization repositories"
       - echo "help - show this help message"
