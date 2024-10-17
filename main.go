@@ -21,6 +21,25 @@ func main() {
 		log.Fatalf("Error: %v", err)
 	}
 	cli.InteractiveCLI(participants)
+
+	// a, b := os.Args[1], os.Args[2]
+	// c, _ := strconv.Atoi(os.Args[3])
+
+	// should outpur "Hello"
+	// grade, err := grading.GradeRookieLeagueAssignment(a, b, c)
+	// fmt.Println("Grade: ", grade, "Error: ", err)
+
+	// // should be graded
+	// grade, err = grading.GradeAssignment("tests/rookie", "tests/planet.txt", 3);
+	// fmt.Println("Grade: ", grade, "Error: ", err);
+
+	// // timeout error
+	// grade, err = grading.GradeAssignment("tests/timeout", "planet.txt", 3);
+	// fmt.Println("Grade: ", grade, "Error: ", err);
+
+	// // file not found
+	// grade, err = grading.GradeAssignment("tests/doesnt exist", "planet.txt", 3);
+	// fmt.Println("Grade: ", grade, "Error: ", err);
 }
 
 // Checks if all required environment variables are set.

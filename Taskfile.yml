@@ -28,6 +28,11 @@ tasks:
     cmds:
       - go run scripts/deleteRepos.go
 
+  test:
+    desc: Run the tests
+    cmds:
+      - go test ./...
+
   help:
     silent: true
     desc: Show this help message
