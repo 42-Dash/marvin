@@ -28,6 +28,16 @@ tasks:
     cmds:
       - go run scripts/deleteRepos.go
 
+  test-grader:
+    desc: Run the tests
+    cmds:
+      - go test ./internals/grading
+
+  test-all:
+    desc: Run all the tests
+    cmds:
+      - task: test-grader
+
   help:
     silent: true
     desc: Show this help message
