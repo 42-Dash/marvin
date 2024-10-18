@@ -65,7 +65,7 @@ func GradeRookieLeagueAssignment(filename string, inputfile string, timeout int)
 
 	input, err := os.ReadFile(inputfile)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	inputStr := strings.Split(string(input), "\n")

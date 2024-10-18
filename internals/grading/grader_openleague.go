@@ -91,7 +91,7 @@ func getScoreOpenLeague(path string, input []string) (float32, error) {
 			return 0, fmt.Errorf("out of bounds")
 		}
 
-		if strings.ContainsRune("012345", rune(input[x][y+1])) {
+		if strings.ContainsRune("0123456789", rune(input[x][y+1])) {
 			switch input[x][y] {
 			case 'W':
 				score += int(w * int(input[x][y+1]-'0'))
@@ -135,7 +135,7 @@ func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (
 
 	input, err := os.ReadFile(inputfile)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	inputStr := strings.Split(string(input), "\n")

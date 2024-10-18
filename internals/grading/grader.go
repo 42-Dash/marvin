@@ -11,7 +11,7 @@ import (
 
 const (
 	// valid runes for the path
-	VALID_RUNES_OPEN_LEAGUE = "0123456789UDLR"
+	VALID_RUNES_OPEN_LEAGUE   = "012345UDLR"
 	VALID_RUNES_ROOKIE_LEAGUE = "UDLR"
 )
 
@@ -44,7 +44,9 @@ func executeWithTimeout(filename string, input string, timeout int) (string, err
 	// Wait for the command to complete or be killed after 5 seconds
 	if err := cmd.Wait(); err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Println("Process killed after 5 seconds")
+			return stdout.String(), nil
+		} else {
+			return "", fmt.Errorf("unexpected behavior")
 		}
 	}
 
@@ -52,8 +54,16 @@ func executeWithTimeout(filename string, input string, timeout int) (string, err
 }
 
 // returns the last valid answer from the output.
+// the last valid answer ends with the last newline rune in the string.
+// It consists of valid_runes only.
 func extractLastAnswer(output string, valid_runes string) (string, error) {
 	var path string
+
+	for _, c := range path {
+		if !strings.ContainsRune(valid_runes, c) {
+			return "", fmt.Errorf("invalid character in path")
+		}
+	}
 
 	end := strings.LastIndex(output, "\n")
 	if end == -1 {
@@ -64,16 +74,11 @@ func extractLastAnswer(output string, valid_runes string) (string, error) {
 	if begin == -1 {
 		path = output[:end]
 	} else {
-		path = output[begin + 1 : end]
+		path = output[begin+1 : end]
 	}
 
 	if len(path) == 0 {
 		return "", fmt.Errorf("empty path")
-	}
-	for _, c := range path {
-		if !strings.ContainsRune(valid_runes, c) {
-			return "", fmt.Errorf("invalid character in path")
-		}
 	}
 	return path, nil
 }
