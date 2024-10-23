@@ -11,6 +11,7 @@ import (
 type Team struct {
 	Name      string   `json:"name"`
 	Nicknames []string `json:"members"`
+	League    string   `json:"league"`
 }
 
 // The team name can only contain:

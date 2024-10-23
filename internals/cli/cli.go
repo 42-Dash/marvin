@@ -12,10 +12,12 @@ import (
 
 // Constants for the different options in the CLI.
 const (
-	CreateRepoValue       = "Create repositories"
-	AddCollaboratorValue  = "Add collaborator (push access)"
-	SetReposReadOnlyValue = "Set repositories to read-only"
-	ExitValue             = "Exit"
+	CreateRepoValue           = "Create repositories"
+	AddCollaboratorValue      = "Add collaborator (push access)"
+	SetReposReadOnlyValue     = "Set repositories to read-only"
+	GradeWorksValue           = "Grade works (create results.json)"
+	GradeWorksWithTracesValue = "Grade works with traces (push traces)"
+	ExitValue                 = "Exit"
 )
 
 // headerTemplate is the template for the header of the CLI.
@@ -28,6 +30,8 @@ const headerTemplate = `+---------------------------------------------+
 | - Create repositories in your organization  |
 | - Add collaborators to repositories         |
 | - Modify collaborator permissions           |
+| - Grade works (create results.json)         |
+| - Grade works with traces (push traces)     |
 |                                             |
 +---------------------------------------------+
 `
@@ -54,6 +58,8 @@ func InteractiveCLI(settings parser.Participants) {
 			CreateRepoValue,
 			AddCollaboratorValue,
 			SetReposReadOnlyValue,
+			GradeWorksValue,
+			GradeWorksWithTracesValue,
 			ExitValue,
 		},
 	}
@@ -73,6 +79,10 @@ func InteractiveCLI(settings parser.Participants) {
 			addCollaborators(settings)
 		case SetReposReadOnlyValue:
 			setReposReadOnly(settings)
+		case GradeWorksValue:
+			gradeWorks(settings)
+		case GradeWorksWithTracesValue:
+			gradeWorksWithTraces(settings)
 		case ExitValue:
 			fmt.Println("Goodbye!")
 			os.Exit(0)

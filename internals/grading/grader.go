@@ -1,84 +1,152 @@
 package grading
 
 import (
+	"archive/tar"
 	"bytes"
 	"context"
+	"dashinette/pkg/parser"
 	"fmt"
-	"os/exec"
-	"strings"
-	"time"
+	"os"
+	"path/filepath"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 )
 
-const (
-	// valid runes for the path
-	VALID_RUNES_OPEN_LEAGUE   = "012345UDLR"
-	VALID_RUNES_ROOKIE_LEAGUE = "UDLR"
-)
+// copyToContainer copies the files from the srcPath to the destPath in the container.
+func copyToContainer(ctx context.Context, cli *client.Client, containerID, srcPath, destPath string) error {
+	buf := new(bytes.Buffer)
+	tw := tar.NewWriter(buf)
 
-// returns player position
-func playersPosition(input []string) (int, int) {
-	for idx, line := range input {
-		if strings.Contains(line, "M") {
-			return idx, strings.IndexRune(line, 'M')
+	err := filepath.Walk(srcPath, func(file string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
+		if fi.Mode().IsRegular() {
+			data, err := os.ReadFile(file)
+			if err != nil {
+				return err
+			}
+
+			header := &tar.Header{
+				Name:    filepath.ToSlash(file),
+				Mode:    int64(fi.Mode().Perm()),
+				Size:    fi.Size(),
+				ModTime: fi.ModTime(),
+			}
+			if err := tw.WriteHeader(header); err != nil {
+				return err
+			}
+			if _, err := tw.Write(data); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
-	return -1, -1
+
+	if err := tw.Close(); err != nil {
+		return err
+	}
+
+	return cli.CopyToContainer(ctx, containerID, destPath, buf, container.CopyToContainerOptions{})
 }
 
-// executes the given file with the given input and timeout.
-func executeWithTimeout(filename string, input string, timeout int) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
-	defer cancel()
+func runDockerContainer(team parser.Team, repo string, tracesfile string) error {
+	ctx := context.Background()
 
-	cmd := exec.CommandContext(ctx, filename, input)
-
-	// Capture stdout
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-
-	// Start the command
-	if err := cmd.Start(); err != nil {
-		return "", fmt.Errorf("failed to start: %v", err)
+	client, err := client.NewClientWithOpts(
+		client.FromEnv, client.WithAPIVersionNegotiation(),
+	)
+	if err != nil {
+		return err
 	}
 
-	// Wait for the command to complete or be killed after 5 seconds
-	if err := cmd.Wait(); err != nil {
-		if ctx.Err() == context.DeadlineExceeded {
-			return stdout.String(), nil
-		} else {
-			return "", fmt.Errorf("unexpected behavior")
+	dir, _ := os.Getwd()
+	config := parser.SerializeTesterConfig(team, repo, tracesfile)
+	containerConfig := &container.Config{
+		Image:      os.Getenv("DOCKER_IMAGE_NAME"),
+		Cmd:        []string{"sh", "-c", fmt.Sprintf("./tester '%v'", config)},
+		WorkingDir: "/app",
+	}
+	hostConfig := &container.HostConfig{
+		Binds:      []string{fmt.Sprintf("%s/traces:/app/traces", dir)},
+		AutoRemove: false,
+	}
+
+	resp, err := client.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
+	if err != nil {
+		return err
+	}
+
+	err = copyToContainer(ctx, client, resp.ID, repo, "/app")
+	if err != nil {
+		return err
+	}
+
+	// start the container
+	if err := client.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		return err
+	}
+
+	// wait for the container to finish
+	statusCh, errCh := client.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			return err
 		}
+	case <-statusCh:
 	}
 
-	return stdout.String(), nil
+	output, err := client.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: false, ShowStderr: true})
+	if err != nil {
+		return err
+	}
+
+	inspect, err := client.ContainerInspect(ctx, resp.ID)
+	if err != nil {
+		return err
+	}
+	if inspect.State.ExitCode != 0 {
+		return err
+	}
+
+	// if err := client.ContainerRemove(ctx, resp.ID, container.RemoveOptions{}); err != nil {
+	// 	return err
+	// }
+
+	stdout, stderr := new(bytes.Buffer), new(bytes.Buffer)
+	_, err = stdcopy.StdCopy(stdout, stderr, output)
+	if err != nil {
+		return err
+	}
+
+	if stderr.Len() > 0 {
+		return fmt.Errorf("stderr: %s", stderr.String())
+	}
+
+	return nil
 }
 
-// returns the last valid answer from the output.
-// the last valid answer ends with the last newline rune in the string.
-// It consists of valid_runes only.
-func extractLastAnswer(output string, valid_runes string) (string, error) {
-	var path string
-
-	for _, c := range path {
-		if !strings.ContainsRune(valid_runes, c) {
-			return "", fmt.Errorf("invalid character in path")
+// grades the assignment for the given team.
+// the function returns an error if an error occurred, otherwise nil.
+// the function creates a log file with the results of the grading.
+func ContainerizedGrader(team parser.Team, repo string, filename string) error {
+	// delete file if it exists
+	if _, err := os.Stat(filename); err == nil {
+		if err := os.Remove(filename); err != nil {
+			return fmt.Errorf("failed to delete file: %v", err)
 		}
 	}
 
-	end := strings.LastIndex(output, "\n")
-	if end == -1 {
-		return "", fmt.Errorf("no new line found")
+	err := runDockerContainer(team, repo, filename)
+	if _, err := os.Stat(filename); err == os.ErrNotExist {
+		return fmt.Errorf("cannot create log file")
 	}
 
-	begin := strings.LastIndex(output[:end], "\n")
-	if begin == -1 {
-		path = output[:end]
-	} else {
-		path = output[begin+1 : end]
-	}
-
-	if len(path) == 0 {
-		return "", fmt.Errorf("empty path")
-	}
-	return path, nil
+	return err
 }
