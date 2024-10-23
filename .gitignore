@@ -1,4 +1,6 @@
 .env
 participants.json
+maps.json
 dashinette
 bin
+traces/*.json

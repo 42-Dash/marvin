@@ -1,0 +1,36 @@
+{
+	"rookieleague": [
+		{
+			"path": "maps/rookieleague/easy20.txt",
+			"name": "easy20",
+			"timeout": 1
+		},
+		{
+			"path": "maps/rookieleague/easy100.txt",
+			"name": "easy30",
+			"timeout": 2
+		},
+		{
+			"path": "maps/rookieleague/medium2500.txt",
+			"name": "medium2500",
+			"timeout": 3
+		}
+	],
+	"openleague": [
+		{
+			"path": "maps/openleague/easy20.txt",
+			"name": "easy20",
+			"timeout": 1
+		},
+		{
+			"path": "maps/openleague/easy100.txt",
+			"name": "easy30",
+			"timeout": 2
+		},
+		{
+			"path": "maps/openleague/medium2500.txt",
+			"name": "medium2500",
+			"timeout": 3
+		}
+	]
+}
