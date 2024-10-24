@@ -1,21 +1,14 @@
-package grading
+package open
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"testing"
 )
 
-const (
-	// Test programs for rookieleague
-	ROOKIELEAGUE_NEW_LINE      = "/rookieleague/invalidnewline"
-	ROOKIELEAGUE_TIMEOUT       = "/rookieleague/invalidtimeout"
-	ROOKIELEAGUE_RUNES         = "/rookieleague/invalidrunes"
-	ROOKIELEAGUE_PATH          = "/rookieleague/invalidpath"
-	ROOKIELEAGUE_VALID_TIMEOUT = "/rookieleague/validtimeout"
-	ROOKIELEAGUE_TEST          = "/rookieleague/validtest"
+var VALID_TEST_MAP_OPEN_LEAGUE = []string{"W4A2E3", "MME5GG", "W7E8A9"}
 
+const (
 	// Test programs for openleague
 	OPENLEAGUE_MISSED_CHARACTER = "/openleague/invalidmissedcharacter"
 	OPENLEAGUE_UNDERFLOW        = "/openleague/invalidunderflow"
@@ -32,12 +25,6 @@ const (
 
 // slices with values for the tests
 var tests = []string{
-	ROOKIELEAGUE_NEW_LINE,
-	ROOKIELEAGUE_TIMEOUT,
-	ROOKIELEAGUE_RUNES,
-	ROOKIELEAGUE_PATH,
-	ROOKIELEAGUE_VALID_TIMEOUT,
-	ROOKIELEAGUE_TEST,
 	OPENLEAGUE_MISSED_CHARACTER,
 	OPENLEAGUE_UNDERFLOW,
 	OPENLEAGUE_EXCEEDS_MAP,
@@ -53,11 +40,10 @@ var tests = []string{
 
 // Constants for the tests
 const (
-	ROOKIE_LEAGUE_VALID_MAP = "../../testdata/rookieleague/4x4.txt"
-	OPEN_LEAGUE_VALID_MAP   = "../../testdata/openleague/4x4.txt"
-	BIN                     = "../../bin/"
-	CMD                     = "../../cmd/tests/"
-	TIMEOUT                 = 3 // seconds
+	OPEN_LEAGUE_VALID_MAP = "../../testdata/openleague/4x4.txt"
+	BIN                   = "../../bin/"
+	CMD                   = "../../cmd/tests/"
+	TIMEOUT               = 3 // seconds
 )
 
 func cleanUp() {
@@ -68,81 +54,15 @@ func TestMain(m *testing.M) {
 	// Compile the executables
 	for _, test := range tests {
 		err := exec.Command("go", "build", "-o", BIN+test, CMD+test).Run()
-		// If the compilation fails, remove the executables and exit
 		if err != nil {
 			cleanUp()
-			fmt.Println("go", "build", "-o", BIN+test, CMD+test)
 			os.Exit(1)
 		}
 	}
+	defer cleanUp()
 
-	// Run the tests
 	code := m.Run()
-
-	cleanUp()
-
-	// Exit with the test code
 	os.Exit(code)
-}
-
-func TestGradeRookieLeagueAssignment_RL_MissedNewLine(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_NEW_LINE,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 0 && err != nil) {
-		t.Errorf("Error: expected output=0 and error, got %v, %v", output, err)
-	}
-}
-
-func TestGradeRookieLeagueAssignment_RL_InvalidTimeout(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_TIMEOUT,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 0 && err != nil) {
-		t.Errorf("Error: expected output=0 and error, got %v, %v", output, err)
-	}
-}
-
-func TestGradeRookieLeagueAssignment_RL_InvalidRunes(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_RUNES,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 0 && err != nil) {
-		t.Errorf("Error: expected output=0 and error, got %v, %v", output, err)
-	}
-}
-
-func TestGradeRookieLeagueAssignment_RL_InvalidPath(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_PATH,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 0 && err != nil) {
-		t.Errorf("Error: expected output=0 and error, got %v, %v", output, err)
-	}
-}
-
-func TestGradeRookieLeagueAssignment_RL_ValidTimeout(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_VALID_TIMEOUT,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 8 && err == nil) {
-		t.Errorf("Error: expected no error and grade, got error=%v and grade=%v", err, output)
-	}
-}
-
-func TestGradeRookieLeagueAssignment_RL_ValidTest(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
-		BIN+ROOKIELEAGUE_TEST,
-		ROOKIE_LEAGUE_VALID_MAP,
-		TIMEOUT)
-	if !(output == 8 && err == nil) {
-		t.Errorf("Error: expected no error and grade, got error=%v and grade=%v", err, output)
-	}
 }
 
 func TestGradeOpenLeagueAssignment_OL_MissedCharacter(t *testing.T) {
@@ -230,7 +150,7 @@ func TestGradeOpenLeagueAssignment_OL_NotLastPath(t *testing.T) {
 		BIN+OPENLEAGUE_NOT_LAST_PATH,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
-	if !(output == 13 && err == nil) {
+	if !(output == 26 && err == nil) {
 		t.Errorf("Error: expected no error and grade, got error=%v and grade=%v", err, output)
 	}
 }
@@ -240,7 +160,7 @@ func TestGradeOpenLeagueAssignment_OL_ValidTimeout(t *testing.T) {
 		BIN+OPENLEAGUE_VALID_TIMEOUT,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
-	if !(output == 13 && err == nil) {
+	if !(output == 26 && err == nil) {
 		t.Errorf("Error: expected no error and grade, got error=%v and grade=%v", err, output)
 	}
 }
@@ -250,7 +170,124 @@ func TestGradeOpenLeagueAssignment_OL_ValidTest(t *testing.T) {
 		BIN+OPENLEAGUE_TEST,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
-	if !(output == 13 && err == nil) {
+	if !(output == 26 && err == nil) {
 		t.Errorf("Error: expected no error and grade, got error=%v and grade=%v", err, output)
+	}
+}
+
+func TestGetScoreOpenLeague_MissingCharacterPoints(t *testing.T) {
+	path := "URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_CharacterPointsSumMismatchSmaller(t *testing.T) {
+	path := "333URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_CharacterPointsSumMismatchGreater(t *testing.T) {
+	path := "344URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_CharacterPointsGreaterThanFive(t *testing.T) {
+	path := "361URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_CharacterPointsLessThanTwo(t *testing.T) {
+	path := "35URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_InvalidPath(t *testing.T) {
+	path := "334URR"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_ValidPath(t *testing.T) {
+	path := "154URRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 37 && err == nil) {
+		t.Errorf("Error: invalid score %v", score)
+	}
+}
+
+func TestGetScoreOpenLeague_EmpyPath(t *testing.T) {
+	path := ""
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_ExceedingBoundsRight(t *testing.T) {
+	path := "334URRDR"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_ExceedingBoundsLeft(t *testing.T) {
+	path := "334LLRRURRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_ExceedingBoundsUp(t *testing.T) {
+	path := "334UUUDDRRD"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_ExceedingBoundsDown(t *testing.T) {
+	path := "334DDURRU"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
+	}
+}
+
+func TestGetScoreOpenLeague_InvalidRune(t *testing.T) {
+	path := "334DDURRUP"
+	input := VALID_TEST_MAP_OPEN_LEAGUE
+	score, err := getScoreOpenLeague(path, input)
+	if !(score == 0 && err != nil) {
+		t.Errorf("Error: %v", err)
 	}
 }

@@ -1,6 +1,7 @@
-package grading
+package rookie
 
 import (
+	"dashinette/internals/grader/common"
 	"fmt"
 	"os"
 	"strings"
@@ -10,7 +11,7 @@ import (
 func getScoreRookieLeague(path string, input []string) (int, error) {
 	var x, y, score int
 
-	x, y = playersPosition(input)
+	x, y = common.PlayersPosition(input)
 	for _, chr := range path {
 		if chr == 'U' {
 			x -= 1
@@ -47,18 +48,17 @@ func getScoreRookieLeague(path string, input []string) (int, error) {
 // Returns:
 //   - int: The grade of the assignment.
 //   - error: An error object if an error occurred, otherwise nil.
-func GradeRookieLeagueAssignment(filename string, inputfile string, timeout int) (int, error) {
-	// check if the file exists
+func GradeRookieLeagueAssignment(filename, inputfile string, timeout int) (int, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return 0, fmt.Errorf("file not found")
 	}
 
-	output, err := executeWithTimeout(filename, inputfile, timeout)
+	output, err := common.ExecuteWithTimeout(filename, inputfile, timeout)
 	if err != nil {
 		return 0, err
 	}
 
-	path, err := extractLastAnswer(output, VALID_RUNES_ROOKIE_LEAGUE)
+	path, err := common.ExtractLastAnswer(output, common.VALID_RUNES_ROOKIE_LEAGUE)
 	if err != nil {
 		return 0, err
 	}

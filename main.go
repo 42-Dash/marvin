@@ -2,7 +2,7 @@ package main
 
 import (
 	"dashinette/internals/cli"
-	"dashinette/internals/grading"
+	"dashinette/internals/grader"
 	"dashinette/pkg/parser"
 	"fmt"
 	"log"
@@ -13,7 +13,6 @@ import (
 
 // {"tracesfile":"traces/The-Avengers.json","repo":"repo/The-Avengers","league":"rookie"}
 
-// TODO: Think about the best way to handle the participants file.
 const participantsFile = "participants.json"
 
 // Main function to start the CLI.
@@ -26,7 +25,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error: %v", err)
 		}
-		grading.MultistageGrader(config)
+		grader.MultistageGraderWithTraces(config)
 	} else {
 		init_env()
 		participants, err := parser.LoadParticipantsJSON(participantsFile)

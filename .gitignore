@@ -1,7 +1,21 @@
+# IDE generated files
+.nfs*
+.vscode
+.idea
+
+# Personal settings
 .env
 participants.json
 maps.json
+
+# Executables and object files
 dashinette
-bin
+dashes/marvin/**/marvin
+dashes/marvin/**/objs/
+*.o
+*.d
+*.a
+
+# Sensitivity data
 traces/*.json
 repo/*

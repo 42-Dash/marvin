@@ -1,4 +1,4 @@
-package grading
+package common
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ const (
 )
 
 // returns player position
-func playersPosition(input []string) (int, int) {
+func PlayersPosition(input []string) (int, int) {
 	for idx, line := range input {
 		if strings.Contains(line, "M") {
 			return idx, strings.IndexRune(line, 'M')
@@ -25,38 +25,10 @@ func playersPosition(input []string) (int, int) {
 	return -1, -1
 }
 
-// executes the given file with the given input and timeout.
-func executeWithTimeout(filename string, input string, timeout int) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
-	defer cancel()
-
-	cmd := exec.CommandContext(ctx, filename, input)
-
-	// Capture stdout
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-
-	// Start the command
-	if err := cmd.Start(); err != nil {
-		return "", fmt.Errorf("failed to start: %v", err)
-	}
-
-	// Wait for the command to complete or be killed after 5 seconds
-	if err := cmd.Wait(); err != nil {
-		if ctx.Err() == context.DeadlineExceeded {
-			return stdout.String(), nil
-		} else {
-			return "", fmt.Errorf("unexpected behavior")
-		}
-	}
-
-	return stdout.String(), nil
-}
-
 // returns the last valid answer from the output.
 // the last valid answer ends with the last newline rune in the string.
 // It consists of valid_runes only.
-func extractLastAnswer(output string, valid_runes string) (string, error) {
+func ExtractLastAnswer(output string, valid_runes string) (string, error) {
 	var path string
 
 	for _, c := range path {
@@ -81,4 +53,32 @@ func extractLastAnswer(output string, valid_runes string) (string, error) {
 		return "", fmt.Errorf("empty path")
 	}
 	return path, nil
+}
+
+// executes the given file with the given input and timeout.
+func ExecuteWithTimeout(filename string, input string, timeout int) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, filename, input)
+
+	// Capture stdout
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+
+	// Start the command
+	if err := cmd.Start(); err != nil {
+		return "", fmt.Errorf("failed to start: %v", err)
+	}
+
+	// Wait for the command to complete or be killed after 5 seconds
+	if err := cmd.Wait(); err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			return stdout.String(), nil
+		} else {
+			return "", fmt.Errorf("unexpected behavior")
+		}
+	}
+
+	return stdout.String(), nil
 }

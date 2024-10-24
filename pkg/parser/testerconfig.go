@@ -20,6 +20,7 @@ type TesterConfig struct {
 	Maps       []Map
 	Repo       string
 	Tracesfile string
+	League     string
 }
 
 type TesterArgs struct {
@@ -61,7 +62,8 @@ func DeserializeTesterConfig(data []byte) (TesterConfig, error) {
 	var config TesterConfig
 	config.Repo = args.RepoPath
 	config.Tracesfile = args.TracesPath
-	if args.League == "rookieleague" {
+	config.League = args.League
+	if args.League == "rookie" {
 		config.Maps = maps.RookieMaps
 	} else {
 		config.Maps = maps.OpenMaps

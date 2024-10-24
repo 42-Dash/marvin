@@ -1,6 +1,7 @@
-package grading
+package open
 
 import (
+	"dashinette/internals/grader/common"
 	"fmt"
 	"os"
 	"strings"
@@ -66,14 +67,14 @@ func isValidPath(path string) bool {
 }
 
 // applies the list of given instructions and returns the score.
-func getScoreOpenLeague(path string, input []string) (float32, error) {
+func getScoreOpenLeague(path string, input []string) (int, error) {
 	if !isValidPath(path) {
 		return 0, fmt.Errorf("invalid path")
 	}
 	var x, y, score int
 	var w, a, e int = characterPoints([3]byte{path[0], path[1], path[2]})
 
-	x, y = playersPosition(input)
+	x, y = common.PlayersPosition(input)
 	for _, chr := range path[3:] {
 		if chr == 'U' {
 			x -= 1
@@ -105,7 +106,7 @@ func getScoreOpenLeague(path string, input []string) (float32, error) {
 	if input[x][y] != 'G' {
 		return 0, fmt.Errorf("marvin didnt reach the goal")
 	}
-	return float32(score) / 2, nil
+	return score, nil
 }
 
 // grades the assignment in the given file.
@@ -117,18 +118,17 @@ func getScoreOpenLeague(path string, input []string) (float32, error) {
 // Returns:
 //   - int: The grade of the assignment.
 //   - error: An error object if an error occurred, otherwise nil.
-func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (float32, error) {
-	// check if the file exists
+func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (int, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return 0, fmt.Errorf("file not found")
 	}
 
-	output, err := executeWithTimeout(filename, inputfile, timeout)
+	output, err := common.ExecuteWithTimeout(filename, inputfile, timeout)
 	if err != nil {
 		return 0, err
 	}
 
-	path, err := extractLastAnswer(output, VALID_RUNES_OPEN_LEAGUE)
+	path, err := common.ExtractLastAnswer(output, common.VALID_RUNES_OPEN_LEAGUE)
 	if err != nil {
 		return 0, err
 	}

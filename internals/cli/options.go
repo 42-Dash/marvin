@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"dashinette/internals/grading"
+	"dashinette/internals/containerization"
 	"dashinette/pkg/github"
 	"dashinette/pkg/parser"
 	"fmt"
@@ -85,7 +85,7 @@ func gradeWorksWithTraces(participants parser.Participants) {
 		}
 	}
 	for _, team := range participants.Teams {
-		err := grading.ContainerizedGrader(team, getCloningPath(team), getTracesFile(team))
+		err := containerization.GradeAssignmentInContainer(team, getCloningPath(team), getTracesFile(team))
 		if err != nil {
 			log.Printf("Error grading works for team %s: %v", team.Name, err)
 		} else {
