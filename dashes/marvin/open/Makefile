@@ -4,7 +4,6 @@
 
 CC			= cc
 RM			= rm -rf
-CFLAGS		= -Wall -Wextra -Werror -MD -MP -g
 MAKEFLAGS	= -j$(nproc) --no-print-directory
 INCS		= incs
 
@@ -46,7 +45,7 @@ $(NAME)	: ${OBJS}
 
 ${OBJSDIR}/%.o		: ${SRCSDIR}/%.c
 		@mkdir -p $(dir $@)
-		${CC} ${CFLAGS} -c $< -o $@ -I ./$(INCS)
+		${CC} -c $< -o $@ -I ./$(INCS)
 
 clean	:
 		$(MAKE) --no-print-directory -C ${LIBDIR} clean

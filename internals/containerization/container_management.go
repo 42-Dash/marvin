@@ -26,7 +26,6 @@ func setupDockerClient() (cli *client.Client, err error) {
 func launchContainer(ctx context.Context, client *client.Client, team parser.Team, repo, tracesfile string) (string, error) {
 	dir, _ := os.Getwd()
 	config := parser.SerializeTesterConfig(team, repo, tracesfile)
-	fmt.Println("config: ", config)
 	containerConfig := &container.Config{
 		Image:      os.Getenv("DOCKER_IMAGE_NAME"),
 		Cmd:        []string{"sh", "-c", fmt.Sprintf("./tester '%v'", config)},

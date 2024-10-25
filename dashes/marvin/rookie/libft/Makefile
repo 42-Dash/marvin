@@ -5,7 +5,6 @@
 CC			= cc
 RM			= rm -rf
 AR			= ar -rc
-CFLAGS		= -Wall -Wextra -Werror -MD -MP -g
 MAKEFLAGS	= -j$(nproc) --no-print-directory
 
 NAME		= libft.a
@@ -34,7 +33,7 @@ all		: ${NAME}
 
 ${OBJSDIR}/%.o	: %.c
 		@mkdir -p $(dir $@)
-		${CC} ${CFLAGS} -c $< -o $@
+		${CC} -c $< -o $@
 
 ${NAME}	: ${OBJS}
 		${AR} $@ ${OBJS}
@@ -48,8 +47,6 @@ fclean	:
 re		:
 		${MAKE} fclean
 		${MAKE} all
-
--include $(DEPS)
 
 .PHONY: all re clean fclean
 .SILENT:

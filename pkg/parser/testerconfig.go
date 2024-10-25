@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+const MAPS_FILE string = "maps.json"
+
 type Map struct {
 	Path    string `json:"path"`
 	Name    string `json:"name"`
@@ -49,7 +51,7 @@ func DeserializeTesterConfig(data []byte) (TesterConfig, error) {
 	}
 
 	var maps MapsJSON
-	file, err := os.Open("maps.json")
+	file, err := os.Open(MAPS_FILE)
 	if err != nil {
 		return TesterConfig{}, err
 	}

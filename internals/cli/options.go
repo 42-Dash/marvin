@@ -62,7 +62,7 @@ func gradeWorks(parser.Participants) {
 
 // utils function that creates the traces file name.
 func getTracesFile(team parser.Team) string {
-	return fmt.Sprintf("traces/%s.json", team.Name)
+	return fmt.Sprintf("traces/%s.log", team.Name)
 }
 
 func getCloningPath(team parser.Team) string {

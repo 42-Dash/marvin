@@ -4,7 +4,6 @@
 
 CC			= cc
 RM			= rm -rf
-CFLAGS		= -Wall -Wextra -Werror -MD -MP -g
 MAKEFLAGS	= -j$(nproc) --no-print-directory
 INCS		= incs
 
@@ -29,7 +28,6 @@ SRCS		= \
 			${SRCSDIR}/main.c
 
 OBJSDIR		= ${SRCSDIR}/objs
-DEPS		= $(SRCS:${SRCSDIR}/%.c=${OBJSDIR}/%.d)
 OBJS		= $(SRCS:${SRCSDIR}/%.c=${OBJSDIR}/%.o)
 
 ###############################################################################
@@ -44,7 +42,7 @@ $(NAME)	: ${OBJS}
 
 ${OBJSDIR}/%.o		: ${SRCSDIR}/%.c
 		@mkdir -p $(dir $@)
-		${CC} ${CFLAGS} -c $< -o $@ -I ./$(INCS)
+		${CC} -c $< -o $@ -I ./$(INCS)
 
 clean	:
 		$(MAKE) --no-print-directory -C ${LIBDIR} clean
@@ -61,7 +59,5 @@ run		:
 re		:
 		$(MAKE) fclean
 		$(MAKE) all
-
--include $(DEPS)
 
 .PHONY: all clean fclean re run

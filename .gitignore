@@ -17,5 +17,5 @@ dashes/marvin/**/objs/
 *.a
 
 # Sensitivity data
-traces/*.json
+traces/*
 repo/*

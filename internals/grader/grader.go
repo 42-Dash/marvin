@@ -1,6 +1,7 @@
 package grader
 
 import (
+	"bytes"
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
 	"dashinette/pkg/parser"
@@ -31,8 +32,17 @@ func compileProject(config parser.TesterConfig) error {
 	}
 
 	cmd := exec.Command("/usr/bin/make", "-C", config.Repo)
-	fmt.Println(cmd.Args)
+	// read stdout and stderr
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
 	err := cmd.Run()
+
+	if err != nil {
+		return fmt.Errorf("Compilation error: %v", stderr.String())
+	}
+
 	fmt.Printf("repo {%v}\n", config.Repo)
 
 	return err
