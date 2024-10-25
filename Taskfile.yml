@@ -37,7 +37,8 @@ tasks:
   test-grader:
     desc: Run the tests
     cmds:
-      - go test ./internals/grading
+      - go test -count=1 ./internals/grader/rookie
+      - go test -count=1 ./internals/grader/open
 
   test-all:
     desc: Run all the tests
