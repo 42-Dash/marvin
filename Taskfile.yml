@@ -23,6 +23,12 @@ tasks:
     cmds:
       - rm -f dashinette
 
+  fclean:
+    desc: Deletes the cloned repositories and generated traces
+    cmds:
+      - rm -rf repo/*
+      - rm -rf traces/*
+
   clean-repos:
     desc: Remove the organization repositories
     cmds:
@@ -31,7 +37,8 @@ tasks:
   test-grader:
     desc: Run the tests
     cmds:
-      - go test ./internals/grading
+      - go test -count=1 ./internals/grader/rookie
+      - go test -count=1 ./internals/grader/open
 
   test-all:
     desc: Run all the tests
