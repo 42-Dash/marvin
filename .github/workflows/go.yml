@@ -25,4 +25,4 @@ jobs:
       run: go build -v ./...
 
     - name: Test Grading
-      run: go test ./internals/grading
+      run: task test-all
