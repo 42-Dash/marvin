@@ -21,18 +21,15 @@ func fileExists(path string) bool {
 
 // Compiles the project and
 func compileProject(config parser.TesterConfig) error {
-	if fileExists(config.Repo + "/" + EXECUTABLE_NAME) {
-		err := os.Remove(config.Repo + "/" + EXECUTABLE_NAME)
-		if err != nil {
-			return fmt.Errorf("error removing old executable: %v", err)
-		}
+	if fileExists(config.Args.RepoPath + "/" + EXECUTABLE_NAME) {
+		os.Remove(config.Args.RepoPath + "/" + EXECUTABLE_NAME)
 	}
 
-	if !fileExists(config.Repo+"/Makefile") && !fileExists(config.Repo+"/makefile") {
-		return fmt.Errorf("Makefile not found")
+	if !fileExists(config.Args.RepoPath + "/Makefile") {
+		return fmt.Errorf("error: Makefile not found")
 	}
 
-	cmd := exec.Command("/usr/bin/make", "-C", config.Repo)
+	cmd := exec.Command("/usr/bin/make", "-C", config.Args.RepoPath)
 
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -40,13 +37,13 @@ func compileProject(config parser.TesterConfig) error {
 	err := cmd.Run()
 
 	if err != nil {
-		return fmt.Errorf("%v", stderr.String())
+		return fmt.Errorf("error: %v", stderr.String())
 	}
 
 	return nil
 }
 
-func selectGradingFunction(league string) func(string, string, int) (int, error) {
+func selectGradingFunction(league string) func(string, string, int) (string, int, error) {
 	switch league {
 	case "rookie":
 		return rookie.GradeRookieLeagueAssignment
@@ -58,35 +55,32 @@ func selectGradingFunction(league string) func(string, string, int) (int, error)
 }
 
 func MultistageGraderWithTraces(config parser.TesterConfig) error {
-	if _, err := os.Stat(config.Tracesfile); err == nil {
-		os.Remove(config.Tracesfile)
+	if _, err := os.Stat("traces/" + config.Args.TeamName + ".json"); err == nil {
+		os.Remove("traces/" + config.Args.TeamName + ".json")
 	}
 
-	logger, err := traces.NewLogger(config.Tracesfile)
-	if err != nil {
-		return err
-	}
-	defer logger.CloseLogger()
+	logger := traces.NewLogger()
+	defer logger.StoreInFile("traces/" + config.Args.TeamName + ".json")
 
-	if err = compileProject(config); err != nil {
-		logger.CompilationError(err.Error())
+	if err := compileProject(config); err != nil {
+		logger.AddCompilation(err.Error())
 		return nil
+	} else {
+		logger.AddCompilation("OK")
 	}
 
-	var gradingFunction = selectGradingFunction(config.League)
+	var gradingFunction = selectGradingFunction(config.Args.League)
 
 	for _, repo := range config.Maps {
-		res, err := gradingFunction(
-			config.Repo+"/"+EXECUTABLE_NAME,
+		_, res, err := gradingFunction(
+			config.Args.RepoPath+"/"+EXECUTABLE_NAME,
 			repo.Path,
 			repo.Timeout,
 		)
 		if err == nil {
-			logger.GradingSuccess(repo.Path, res)
-		} else if err.Error() == "timeout" {
-			logger.TimeoutError(repo.Path)
+			logger.AddStage(repo.Path, res, "OK")
 		} else {
-			logger.GradingError(repo.Path, res, err.Error())
+			logger.AddStage(repo.Path, res, err.Error())
 		}
 	}
 

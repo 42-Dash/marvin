@@ -69,7 +69,7 @@ func isValidPath(path string) bool {
 // applies the list of given instructions and returns the score.
 func getScoreOpenLeague(path string, input []string) (int, error) {
 	if !isValidPath(path) {
-		return 0, fmt.Errorf("invalid path")
+		return 0, fmt.Errorf("error: invalid path")
 	}
 	var x, y, score int
 	var w, a, e int = characterPoints([3]byte{path[0], path[1], path[2]})
@@ -85,11 +85,11 @@ func getScoreOpenLeague(path string, input []string) (int, error) {
 		} else if chr == 'R' {
 			y += 2
 		} else {
-			return 0, fmt.Errorf("invalid path")
+			return 0, fmt.Errorf("error: invalid path")
 		}
 
 		if x < 0 || x >= len(input) || y < 0 || y >= len(input[0]) {
-			return 0, fmt.Errorf("out of bounds")
+			return 0, fmt.Errorf("error: out of bounds")
 		}
 
 		if strings.ContainsRune("0123456789", rune(input[x][y+1])) {
@@ -104,7 +104,7 @@ func getScoreOpenLeague(path string, input []string) (int, error) {
 		}
 	}
 	if input[x][y] != 'G' {
-		return 0, fmt.Errorf("marvin didnt reach the goal")
+		return 0, fmt.Errorf("error: marvin didnt reach the goal")
 	}
 	return score, nil
 }
@@ -118,32 +118,28 @@ func getScoreOpenLeague(path string, input []string) (int, error) {
 // Returns:
 //   - int: The grade of the assignment.
 //   - error: An error object if an error occurred, otherwise nil.
-func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (int, error) {
+func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (string, int, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return 0, fmt.Errorf("file not found")
+		return "", 0, fmt.Errorf("error: \"marvin\" file not found")
 	}
 
 	output, err := common.ExecuteWithTimeout(filename, inputfile, timeout)
 	if err != nil {
-		return 0, err
+		return "",0, err
 	}
 
 	path, err := common.ExtractLastAnswer(output, common.VALID_RUNES_OPEN_LEAGUE)
 	if err != nil {
-		return 0, err
+		return path, 0, err
 	}
 
-	input, err := os.ReadFile(inputfile)
-	if err != nil {
-		return 0, err
-	}
-
+	input, _ := os.ReadFile(inputfile)
 	inputStr := strings.Split(string(input), "\n")
 	inputStr = inputStr[:len(inputStr)-1]
 	score, err := getScoreOpenLeague(path, inputStr)
 
 	if err != nil {
-		return 0, err
+		return path, 0, err
 	}
-	return score, nil
+	return path, score, nil
 }

@@ -22,11 +22,11 @@ func getScoreRookieLeague(path string, input []string) (int, error) {
 		} else if chr == 'R' {
 			y += 1
 		} else {
-			return 0, fmt.Errorf("invalid path")
+			return 0, fmt.Errorf("error: invalid path")
 		}
 
 		if x < 0 || x >= len(input) || y < 0 || y >= len(input[0]) {
-			return 0, fmt.Errorf("out of bounds")
+			return 0, fmt.Errorf("error: out of bounds")
 		}
 
 		if strings.ContainsRune("123456789", rune(input[x][y])) {
@@ -34,7 +34,7 @@ func getScoreRookieLeague(path string, input []string) (int, error) {
 		}
 	}
 	if input[x][y] != 'G' {
-		return 0, fmt.Errorf("marvin didnt reach the goal")
+		return 0, fmt.Errorf("error: marvin didnt reach the goal")
 	}
 	return score, nil
 }
@@ -48,32 +48,28 @@ func getScoreRookieLeague(path string, input []string) (int, error) {
 // Returns:
 //   - int: The grade of the assignment.
 //   - error: An error object if an error occurred, otherwise nil.
-func GradeRookieLeagueAssignment(filename, inputfile string, timeout int) (int, error) {
+func GradeRookieLeagueAssignment(filename, inputfile string, timeout int) (string, int, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return 0, fmt.Errorf("file not found")
+		return "", 0, fmt.Errorf("error: \"marvin\" file not found")
 	}
 
 	output, err := common.ExecuteWithTimeout(filename, inputfile, timeout)
 	if err != nil {
-		return 0, err
+		return "", 0, err
 	}
 
 	path, err := common.ExtractLastAnswer(output, common.VALID_RUNES_ROOKIE_LEAGUE)
 	if err != nil {
-		return 0, err
+		return path, 0, err
 	}
 
-	input, err := os.ReadFile(inputfile)
-	if err != nil {
-		return 0, err
-	}
-
+	input, _ := os.ReadFile(inputfile)
 	inputStr := strings.Split(string(input), "\n")
 	inputStr = inputStr[:len(inputStr)-1]
 	score, err := getScoreRookieLeague(path, inputStr)
 
 	if err != nil {
-		return 0, err
+		return path, 0, err
 	}
-	return score, nil
+	return path, score, nil
 }

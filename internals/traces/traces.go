@@ -1,65 +1,50 @@
 package traces
 
 import (
-	"fmt"
+	"encoding/json"
 	"os"
 )
 
+type StageGrade struct {
+	StageMap string `json:"map_path"`
+	Grade    int    `json:"grade"`
+	Status   string `json:"status"`
+}
+
 type Traces struct {
-	File *os.File
+	Compilation string       `json:"compilation"`
+	Grades      []StageGrade `json:"grades"`
+	FinalGrade  int          `json:"final_grade"`
 }
 
 type TracesInterface interface {
-	CloseLogger() error
-
-	CompilationError(msg string) error
-	CompilationSuccess() error
-
-	GradingError(mapName string, output int, reason string) error
-	TimeoutError(mapName, output string) error
-	UploadMap(mapName string) error
-
-	GradingSuccess(input, output string) error
+	AddCompilation(msg string)
+	AddStage(mapName string, output int, status string)
+	StoreInFile(path string) error
 }
 
-func NewLogger(path string) (*Traces, error) {
-	file, err := os.Create(path)
-	if err != nil {
-		return &Traces{}, err
+func NewLogger() *Traces {
+	return &Traces{
+		Compilation: "OK",
+		Grades:      []StageGrade{},
+		FinalGrade:  0,
 	}
-	return &Traces{File: file}, nil
 }
 
-func (t *Traces) CloseLogger() error {
-	return t.File.Close()
+func (t *Traces) AddCompilation(msg string) {
+	t.Compilation = msg
 }
 
-func (t *Traces) CompilationError(msg string) error {
-	_, err := t.File.WriteString("Compilation error: " + msg + "\n")
-	return err
+func (t *Traces) AddStage(mapName string, grade int, status string) {
+	t.Grades = append(t.Grades, StageGrade{
+		StageMap: mapName,
+		Grade:    grade,
+		Status:   status,
+	})
+	t.FinalGrade += grade
 }
 
-func (t *Traces) CompilationSuccess() error {
-	_, err := t.File.WriteString("Compilation success\n")
-	return err
-}
-
-func (t *Traces) TimeoutError(mapName string) error {
-	_, err := t.File.WriteString("Time limit exceeded for map: " + mapName + "\n")
-	return err
-}
-
-func (t *Traces) UploadMap(mapName string) error {
-	_, err := t.File.WriteString("Uploading map: " + mapName + "\n")
-	return err
-}
-
-func (t *Traces) GradingError(mapName string, output int, reason string) error {
-	_, err := t.File.WriteString(fmt.Sprintf("Error grading map: %v\nMarvin's output: %v\nReason: %v\n", mapName, output, reason))
-	return err
-}
-
-func (t *Traces) GradingSuccess(input string, output int) error {
-	_, err := t.File.WriteString(fmt.Sprintf("Success: %v, final grade: %v", input, output))
-	return err
+func (t *Traces) StoreInFile(file string) error {
+	results, _ := json.Marshal(t)
+	return os.WriteFile(file, results, 0644)
 }

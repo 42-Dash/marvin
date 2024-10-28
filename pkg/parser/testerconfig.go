@@ -19,23 +19,21 @@ type MapsJSON struct {
 }
 
 type TesterConfig struct {
-	Maps       []Map
-	Repo       string
-	Tracesfile string
-	League     string
+	Maps []Map
+	Args TesterArgs
 }
 
 type TesterArgs struct {
-	TracesPath string `json:"tracesfile"`
-	RepoPath   string `json:"repo"`
-	League     string `json:"league"`
+	TeamName string `json:"teamname"`
+	RepoPath string `json:"repo"`
+	League   string `json:"league"`
 }
 
 func SerializeTesterConfig(team Team, repo, tracesfile string) string {
 	config := TesterArgs{
-		TracesPath: tracesfile,
-		RepoPath:   repo,
-		League:     team.League,
+		TeamName: team.Name,
+		RepoPath: repo,
+		League:   team.League,
 	}
 
 	value, _ := json.Marshal(config)
@@ -61,10 +59,9 @@ func DeserializeTesterConfig(data []byte) (TesterConfig, error) {
 	if err != nil {
 		return TesterConfig{}, err
 	}
-	var config TesterConfig
-	config.Repo = args.RepoPath
-	config.Tracesfile = args.TracesPath
-	config.League = args.League
+	var config = TesterConfig{
+		Args: args,
+	}
 	if args.League == "rookie" {
 		config.Maps = maps.RookieMaps
 	} else {

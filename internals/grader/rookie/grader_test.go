@@ -55,7 +55,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_MissedNewLine(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_NEW_LINE,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -65,7 +65,7 @@ func TestGradeRookieLeagueAssignment_RL_MissedNewLine(t *testing.T) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_InvalidTimeout(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_TIMEOUT,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -75,7 +75,7 @@ func TestGradeRookieLeagueAssignment_RL_InvalidTimeout(t *testing.T) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_InvalidRunes(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_RUNES,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -85,7 +85,7 @@ func TestGradeRookieLeagueAssignment_RL_InvalidRunes(t *testing.T) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_InvalidPath(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_PATH,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -95,7 +95,7 @@ func TestGradeRookieLeagueAssignment_RL_InvalidPath(t *testing.T) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_ValidTimeout(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_VALID_TIMEOUT,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -105,7 +105,7 @@ func TestGradeRookieLeagueAssignment_RL_ValidTimeout(t *testing.T) {
 }
 
 func TestGradeRookieLeagueAssignment_RL_ValidTest(t *testing.T) {
-	output, err := GradeRookieLeagueAssignment(
+	_, output, err := GradeRookieLeagueAssignment(
 		BIN+ROOKIELEAGUE_TEST,
 		ROOKIE_LEAGUE_VALID_MAP,
 		TIMEOUT)

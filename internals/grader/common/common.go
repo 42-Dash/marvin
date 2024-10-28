@@ -33,13 +33,13 @@ func ExtractLastAnswer(output string, valid_runes string) (string, error) {
 
 	for _, c := range path {
 		if !strings.ContainsRune(valid_runes, c) {
-			return "", fmt.Errorf("invalid character in path")
+			return "", fmt.Errorf("error: invalid character in path")
 		}
 	}
 
 	end := strings.LastIndex(output, "\n")
 	if end == -1 {
-		return "", fmt.Errorf("no new line found")
+		return "", fmt.Errorf("error: no new line found")
 	}
 
 	begin := strings.LastIndex(output[:end], "\n")
@@ -50,7 +50,7 @@ func ExtractLastAnswer(output string, valid_runes string) (string, error) {
 	}
 
 	if len(path) == 0 {
-		return "", fmt.Errorf("empty path")
+		return "", fmt.Errorf("error: empty path")
 	}
 	return path, nil
 }
@@ -68,7 +68,7 @@ func ExecuteWithTimeout(filename string, input string, timeout int) (string, err
 
 	// Start the command
 	if err := cmd.Start(); err != nil {
-		return "", fmt.Errorf("failed to start: %v", err)
+		return "", fmt.Errorf("error: failed to start: %v", err)
 	}
 
 	// Wait for the command to complete or be killed after 5 seconds
@@ -76,7 +76,7 @@ func ExecuteWithTimeout(filename string, input string, timeout int) (string, err
 		if ctx.Err() == context.DeadlineExceeded {
 			return stdout.String(), nil
 		} else {
-			return "", fmt.Errorf("unexpected behavior")
+			return "", fmt.Errorf("error: unexpected behavior")
 		}
 	}
 
