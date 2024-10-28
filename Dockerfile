@@ -12,6 +12,6 @@ COPY /maps.json maps.json
 COPY /internals internals
 COPY /maps maps
 COPY /pkg pkg
-COPY /main.go main.go
+COPY /cmd/tester/main.go main.go
 
 RUN go build -o tester .

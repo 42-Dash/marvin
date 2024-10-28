@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
+	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
@@ -23,7 +24,7 @@ func compileProject(config parser.TesterConfig) error {
 	if fileExists(config.Repo + "/" + EXECUTABLE_NAME) {
 		err := os.Remove(config.Repo + "/" + EXECUTABLE_NAME)
 		if err != nil {
-			return err
+			return fmt.Errorf("error removing old executable: %v", err)
 		}
 	}
 
@@ -32,55 +33,62 @@ func compileProject(config parser.TesterConfig) error {
 	}
 
 	cmd := exec.Command("/usr/bin/make", "-C", config.Repo)
-	// read stdout and stderr
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
+
+	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
 	err := cmd.Run()
 
 	if err != nil {
-		return fmt.Errorf("Compilation error: %v", stderr.String())
+		return fmt.Errorf("%v", stderr.String())
 	}
 
-	fmt.Printf("repo {%v}\n", config.Repo)
-
-	return err
+	return nil
 }
 
-func MultistageGraderWithTraces(config parser.TesterConfig) (err error) {
-	if _, err = os.Stat(config.Tracesfile); err == nil {
+func selectGradingFunction(league string) func(string, string, int) (int, error) {
+	switch league {
+	case "rookie":
+		return rookie.GradeRookieLeagueAssignment
+	case "open":
+		return open.GradeOpenLeagueAssignment
+	default:
+		return nil
+	}
+}
+
+func MultistageGraderWithTraces(config parser.TesterConfig) error {
+	if _, err := os.Stat(config.Tracesfile); err == nil {
 		os.Remove(config.Tracesfile)
 	}
 
-	traces, err := os.Create(config.Tracesfile)
+	logger, err := traces.NewLogger(config.Tracesfile)
 	if err != nil {
-		return
+		return err
 	}
-	defer traces.Close()
+	defer logger.CloseLogger()
 
 	if err = compileProject(config); err != nil {
-		traces.Write([]byte(fmt.Sprintf("Compilation error: %v", err)))
-		return
+		logger.CompilationError(err.Error())
+		return nil
 	}
 
-	var gradingFunction func(string, string, int) (int, error)
-	switch config.League {
-	case "rookie":
-		gradingFunction = rookie.GradeRookieLeagueAssignment
-	case "open":
-		gradingFunction = open.GradeOpenLeagueAssignment
-	}
+	var gradingFunction = selectGradingFunction(config.League)
 
-	for repo := range config.Maps {
-		res, err := gradingFunction(config.Repo+"/"+EXECUTABLE_NAME, config.Maps[repo].Path, config.Maps[repo].Timeout)
-		if err != nil {
-			traces.Write([]byte(fmt.Sprintf("Error grading assignment: %v", err)))
-			break
+	for _, repo := range config.Maps {
+		res, err := gradingFunction(
+			config.Repo+"/"+EXECUTABLE_NAME,
+			repo.Path,
+			repo.Timeout,
+		)
+		if err == nil {
+			logger.GradingSuccess(repo.Path, res)
+		} else if err.Error() == "timeout" {
+			logger.TimeoutError(repo.Path)
 		} else {
-			traces.Write([]byte(fmt.Sprintf("Map %v passed with score %v", config.Maps[repo].Name, res)))
+			logger.GradingError(repo.Path, res, err.Error())
 		}
 	}
 
-	return
+	return nil
 }
