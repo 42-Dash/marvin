@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 // Returns the URL to clone the given repository.
 func cloneRepoUrl(repo_name string) string {
-	return fmt.Sprintf("https://github.com/%s/%s",
+	return fmt.Sprintf("https://github.com/%s/%s.git",
 		os.Getenv("GITHUB_ORGANISATION"),
 		repo_name,
 	)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 // The permission levels for collaborators.
@@ -30,7 +31,9 @@ func sendRequest(
 	url string,
 	payload []byte,
 ) (*http.Response, error) {
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
@@ -39,8 +42,7 @@ func sendRequest(
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set(
-		"Authorization",
-		fmt.Sprintf("Bearer %s", os.Getenv("GITHUB_ACCESS")),
+		"Authorization", fmt.Sprintf("Bearer %s", os.Getenv("GITHUB_ACCESS")),
 	)
 
 	return client.Do(req)

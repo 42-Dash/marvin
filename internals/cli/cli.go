@@ -12,27 +12,21 @@ import (
 
 // Constants for the different options in the CLI.
 const (
-	CreateRepoValue           = "Create repositories"
-	AddCollaboratorValue      = "Add collaborator (push access)"
-	SetReposReadOnlyValue     = "Set repositories to read-only"
-	GradeWorksValue           = "Grade works (create results.json)"
-	GradeWorksWithTracesValue = "Grade works with traces (push traces)"
-	ExitValue                 = "Exit"
+	CreateRepoValue          = "Create repositories"
+	PushSubjectsValue        = "Push subjects"
+	AddCollaboratorValue     = "Add collaborators / write access"
+	SetReposReadOnlyValue    = "Set repositories to read-only"
+	EvaluateSubmissionsValue = "Evaluate the submissions / create traces"
+	PushTracesValue          = "Parse & Push traces to 'traces' branch"
+	CreateResultsValue       = "Parse & Create results.json file"
+	ExitValue                = "Exit"
 )
 
 // headerTemplate is the template for the header of the CLI.
 const headerTemplate = `+---------------------------------------------+
-|                    Dash                     |
+|                    Menu                     |
 +---------------------------------------------+
-| Welcome to Dash!                            |
-|                                             |
-| Through this CLI you can:                   |
-| - Create repositories in your organization  |
-| - Add collaborators to repositories         |
-| - Modify collaborator permissions           |
-| - Grade works (create results.json)         |
-| - Grade works with traces (push traces)     |
-|                                             |
+| Your ad can be here                         |
 +---------------------------------------------+
 `
 
@@ -53,15 +47,18 @@ func rerenderHeader(header string) {
 // The function uses logs to print the status of the operation.
 func InteractiveCLI(settings parser.Participants) {
 	prompt := promptui.Select{
-		Label: "Select an option",
+		Label: "Select an action",
 		Items: []string{
 			CreateRepoValue,
+			PushSubjectsValue,
 			AddCollaboratorValue,
 			SetReposReadOnlyValue,
-			GradeWorksValue,
-			GradeWorksWithTracesValue,
+			EvaluateSubmissionsValue,
+			PushTracesValue,
+			CreateResultsValue,
 			ExitValue,
 		},
+		Size: 10,
 	}
 	rerenderHeader(headerTemplate)
 
@@ -75,17 +72,23 @@ func InteractiveCLI(settings parser.Participants) {
 		switch result {
 		case CreateRepoValue:
 			createRepos(settings)
+		case PushSubjectsValue:
+			pushSubjects(settings)
 		case AddCollaboratorValue:
 			addCollaborators(settings)
 		case SetReposReadOnlyValue:
 			setReposReadOnly(settings)
-		case GradeWorksValue:
-			gradeWorks(settings)
-		case GradeWorksWithTracesValue:
-			gradeWorksWithTraces(settings)
+		case EvaluateSubmissionsValue:
+			evaluateAssignments(settings)
+		case PushTracesValue:
+			pushTraces(settings)
+		case CreateResultsValue:
+			createResults(settings)
 		case ExitValue:
-			fmt.Println("Goodbye!")
+			fmt.Println("Exiting...")
 			os.Exit(0)
+		default:
+			fmt.Println("Not implemented yet")
 		}
 	}
 }
