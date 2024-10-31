@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
+	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
@@ -32,7 +33,7 @@ func launchContainer(ctx context.Context, client *client.Client, team parser.Tea
 		WorkingDir: "/app",
 	}
 	hostConfig := &container.HostConfig{
-		Binds:      []string{fmt.Sprintf("%s/traces:/app/traces", dir)},
+		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, traces.DashFolder)},
 		AutoRemove: false,
 	}
 
@@ -173,7 +174,7 @@ func copyToContainer(ctx context.Context, cli *client.Client, containerID, srcPa
 			}
 
 			header := &tar.Header{
-				Name:    filepath.ToSlash(file),
+				Name:    traces.GetRepoPathContainerized(file),
 				Mode:    int64(fi.Mode().Perm()),
 				Size:    fi.Size(),
 				ModTime: fi.ModTime(),

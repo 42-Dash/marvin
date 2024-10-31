@@ -55,12 +55,13 @@ func selectGradingFunction(league string) func(string, string, int) (string, int
 }
 
 func MultistageGraderWithTraces(config parser.TesterConfig) error {
-	if _, err := os.Stat("traces/" + config.Args.TeamName + ".json"); err == nil {
-		os.Remove("traces/" + config.Args.TeamName + ".json")
+	_, err := os.Stat(traces.GetTracesPath(config.Args.TeamName))
+	if err == nil {
+		os.Remove(traces.GetTracesPath(config.Args.TeamName))
 	}
 
 	logger := traces.NewLogger()
-	defer logger.StoreInFile("traces/" + config.Args.TeamName + ".json")
+	defer logger.StoreInFile(traces.GetTracesPathContainerized(config.Args.TeamName))
 
 	if err := compileProject(config); err != nil {
 		logger.AddCompilation(err.Error())

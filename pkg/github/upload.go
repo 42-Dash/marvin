@@ -32,6 +32,9 @@ func UploadFileToRoot(repo, filename, commit, branch string) error {
 		return fmt.Errorf("file %s does not exist", filename)
 	}
 
+	if err := SwitchBranch(repo, branch); err != nil {
+		return fmt.Errorf("failed to checkout branch: %w", err)
+	}
 	basename := filepath.Base(filename)
 
 	if err := executeCommand(".", "cp", filename, filepath.Join(repo, basename)); err != nil {

@@ -2,9 +2,9 @@ package cli
 
 import (
 	"dashinette/internals/containerization"
+	"dashinette/internals/traces"
 	"dashinette/pkg/github"
 	"dashinette/pkg/parser"
-	"fmt"
 	"log"
 )
 
@@ -32,7 +32,7 @@ func addCollaborators(participants parser.Participants) {
 
 func pushSubjects(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.UploadFileToRoot("repo/"+team.Name, "README.md", "add subjects", "main")
+		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), "README.md", "add subjects", "main")
 		if err != nil {
 			log.Printf("Error pushing subjects for team %s: %v", team.Name, err)
 		} else {
@@ -41,18 +41,9 @@ func pushSubjects(participants parser.Participants) {
 	}
 }
 
-// utils function that creates the traces file name.
-func getTracesFile(team parser.Team) string {
-	return fmt.Sprintf("traces/%s.json", team.Name)
-}
-
-func getCloningPath(team parser.Team) string {
-	return fmt.Sprintf("repo/%s", team.Name)
-}
-
 func evaluateAssignments(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.CloneRepo(team.Name, getCloningPath(team))
+		err := github.CloneRepo(team.Name, traces.GetRepoPath(team.Name))
 		if err != nil {
 			log.Printf("Error cloning repo for team %s: %v", team.Name, err)
 		} else {
@@ -60,7 +51,7 @@ func evaluateAssignments(participants parser.Participants) {
 		}
 	}
 	for _, team := range participants.Teams {
-		err := containerization.GradeAssignmentInContainer(team, getCloningPath(team), getTracesFile(team))
+		err := containerization.GradeAssignmentInContainer(team, traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name))
 		if err != nil {
 			log.Printf("Error grading works for team %s: %v", team.Name, err)
 		} else {
@@ -69,21 +60,9 @@ func evaluateAssignments(participants parser.Participants) {
 	}
 }
 
-func createBranches(participants parser.Participants, branch string) {
-	for _, team := range participants.Teams {
-		err := github.CreateBranch(team.Name, branch)
-		if err != nil {
-			log.Printf("Error creating branch for team %s: %v", team.Name, err)
-		} else {
-			log.Printf("Successfully created branch for team %s", team.Name)
-		}
-	}
-}
-
 func pushTraces(participants parser.Participants) {
-	createBranches(participants, "traces")
 	for _, team := range participants.Teams {
-		err := github.UploadFileToRoot("repo/"+team.Name, "traces/"+team.Name+".json", "Upload traces", "traces")
+		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name), "Upload traces", "traces")
 		if err != nil {
 			log.Printf("Error pushing results for team %s: %v", team.Name, err)
 		} else {

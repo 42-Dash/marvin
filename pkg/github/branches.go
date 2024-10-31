@@ -1,14 +1,9 @@
 package github
 
-import (
-	"fmt"
-	"path/filepath"
-)
+import "fmt"
 
 // Checks if a branch exists in the repository.
-func isBranchExist(name string, branch string) bool {
-	repoPath := filepath.Join("repo", name)
-
+func isBranchExist(repoPath string, branch string) bool { // todo
 	err := executeCommand(
 		repoPath,
 		"git",
@@ -17,17 +12,16 @@ func isBranchExist(name string, branch string) bool {
 		"--quiet",
 		fmt.Sprintf("refs/heads/%s", branch),
 	)
-	return err == nil
+	return err != nil
 }
 
 // Creates a branch in the repository.
-func CreateBranch(name string, branch string) (err error) {
-	repoPath := filepath.Join("repo", name)
+func SwitchBranch(repoPath string, branch string) (err error) {
 
-	if isBranchExist(name, branch) {
+	if isBranchExist(repoPath, branch) {
 		err = executeCommand(repoPath, "git", "checkout", "-b", branch)
 	} else {
-		err = executeCommand(repoPath, "git", "checkout", branch)
+		err = executeCommand(repoPath, "git", "switch", branch)
 	}
 
 	if err != nil {

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"dashinette/internals/traces"
 	"encoding/json"
 	"os"
 )
@@ -32,7 +33,7 @@ type TesterArgs struct {
 func SerializeTesterConfig(team Team, repo, tracesfile string) string {
 	config := TesterArgs{
 		TeamName: team.Name,
-		RepoPath: repo,
+		RepoPath: traces.GetRepoPathContainerized(repo),
 		League:   team.League,
 	}
 
