@@ -19,3 +19,4 @@ dashes/marvin/**/objs/
 # Sensitivity data
 traces/*
 repo/*
+bin/*

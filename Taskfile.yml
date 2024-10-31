@@ -38,7 +38,7 @@ tasks:
   clean-repos:
     desc: Remove the organization repositories
     cmds:
-      - go run scripts/deleteRepos.go
+      - go run scripts/delete_repos/main.go
 
   test:
     desc: Run all the tests
