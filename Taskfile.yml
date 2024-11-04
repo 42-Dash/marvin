@@ -45,6 +45,7 @@ tasks:
     cmds:
       - go test -count=1 ./internals/grader/rookie
       - go test -count=1 ./internals/grader/open
+      - task: clean
 
   help:
     silent: true

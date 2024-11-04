@@ -40,7 +40,7 @@ var tests = []string{
 
 // Constants for the tests
 const (
-	OPEN_LEAGUE_VALID_MAP = "../../../maps/openleague/4x4.txt"
+	OPEN_LEAGUE_VALID_MAP = "../../../cmd/tests/openleague/4x4.txt"
 	BIN                   = "../../../bin/"
 	CMD                   = "../../../cmd/tests/"
 	TIMEOUT               = 3 // seconds

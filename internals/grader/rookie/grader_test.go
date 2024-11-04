@@ -29,7 +29,7 @@ var tests = []string{
 
 // Constants for the tests
 const (
-	ROOKIE_LEAGUE_VALID_MAP = "../../../maps/rookieleague/4x4.txt"
+	ROOKIE_LEAGUE_VALID_MAP = "../../../cmd/tests/rookieleague/4x4.txt"
 	BIN                     = "../../../bin/"
 	CMD                     = "../../../cmd/tests/"
 	TIMEOUT                 = 3 // seconds
