@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY /go.sum go.sum
 COPY /go.mod go.mod
-COPY /maps.json maps.json
+COPY /config/maps.json config/maps.json
 
 COPY /internals internals
 COPY /maps maps

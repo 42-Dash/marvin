@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const MAPS_FILE string = "maps.json"
+const MAPS_FILE string = "config/maps.json"
 
 type Map struct {
 	Path    string `json:"path"`

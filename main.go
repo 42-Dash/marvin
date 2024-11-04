@@ -2,6 +2,7 @@ package main
 
 import (
 	"dashinette/internals/cli"
+	"dashinette/internals/containerization"
 	"dashinette/internals/logger"
 	"dashinette/pkg/parser"
 	"log"
@@ -11,13 +12,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const participantsFile = "participants.json"
 
 // Main function to start the CLI.
 // It prompts the user to enter the path to the participants file.
 // Then it loads the participants and starts the interactive CLI.
 func main() {
-	participants, err := parser.LoadParticipantsJSON(participantsFile)
+	participants, err := parser.LoadParticipantsJSON()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
@@ -30,7 +30,7 @@ func main() {
 
 // Checks if all required environment variables are set.
 func init() {
-	err := godotenv.Load()
+	err := godotenv.Load("config/.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
@@ -38,7 +38,6 @@ func init() {
 	var variables []string = []string{
 		"GITHUB_ACCESS",
 		"GITHUB_ORGANISATION",
-		"DOCKER_IMAGE_NAME",
 	}
 
 	for _, env := range variables {
@@ -47,9 +46,8 @@ func init() {
 		}
 	}
 
-	imageName := os.Getenv("DOCKER_IMAGE_NAME")
+	var imageName string = containerization.DockerImageName
 
-	// Check if the Docker image exists
 	cmd := exec.Command("docker", "image", "inspect", imageName)
 	if err := cmd.Run(); err != nil {
 		log.Printf("Docker image %s not found. Building it...", imageName)
