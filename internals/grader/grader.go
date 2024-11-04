@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
-	"dashinette/internals/logger"
 	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"fmt"
@@ -27,7 +26,6 @@ func compileProject(config parser.TesterConfig) error {
 	}
 
 	if !fileExists(config.Args.RepoPath + "/Makefile") {
-		// logger.Error.Printf("Team %s Makefile not found", config.Args.TeamName)
 		return fmt.Errorf("error: Makefile not found")
 	}
 
@@ -39,7 +37,6 @@ func compileProject(config parser.TesterConfig) error {
 	err := cmd.Run()
 
 	if err != nil {
-		// logger.Error.Printf("Team %s error compiling project: %v", config.Args.TeamName, err)
 		return fmt.Errorf("error: %v", stderr.String())
 	}
 
@@ -65,7 +62,6 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 	tr := traces.NewLogger()
 	defer tr.StoreInFile(traces.GetTracesPathContainerized(config.Args.TeamName))
 
-
 	if err := compileProject(config); err != nil {
 		tr.AddCompilation(err.Error())
 		return nil
@@ -83,10 +79,8 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 		)
 		if err == nil {
 			tr.AddStage(repo.Path, res, "OK")
-			logger.Info.Printf("Team %s graded map %s: %d", config.Args.TeamName, repo.Path, res)
 		} else {
 			tr.AddStage(repo.Path, res, err.Error())
-			logger.Info.Printf("Team %s error grading map %s: %v", config.Args.TeamName, repo.Path, err)
 		}
 	}
 
