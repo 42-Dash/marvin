@@ -1,22 +1,11 @@
 package github
 
 import (
+	"dashinette/internals/logger"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 )
-
-// executeCommand executes a command in the given directory.
-func executeCommand(dir, command string, args ...string) error {
-	cmd := exec.Command(command, args...)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Dir = dir
-
-	return cmd.Run()
-}
 
 // It adds the file to the repository, commits it and pushes it to the given branch.
 //
@@ -28,6 +17,14 @@ func executeCommand(dir, command string, args ...string) error {
 //
 // Returns an error if the file does not exist, or if the commands fail.
 func UploadFileToRoot(repo, filename, commit, branch string) error {
+	if _, err := os.Stat(repo); os.IsNotExist(err) {
+		logger.Warn.Printf("Repository %s does not exist", repo)
+		logger.Warn.Printf("Cloning %s...", repo)
+		if err := CloneRepo(filepath.Base(repo), repo); err != nil {
+			return fmt.Errorf("failed to clone repo: %w", err)
+		}
+	}
+
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", filename)
 	}
@@ -45,7 +42,7 @@ func UploadFileToRoot(repo, filename, commit, branch string) error {
 		return fmt.Errorf("failed to add file: %w to repo %s", err, repo)
 	}
 
-	err := executeCommand(repo, "git", "commit", "-m", commit);
+	err := executeCommand(repo, "git", "commit", "-m", commit)
 	if err != nil && err.Error() != "exit status 1" {
 		return fmt.Errorf("failed to commit file: %w to repo %s", err, repo)
 	}

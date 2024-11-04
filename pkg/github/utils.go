@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -46,4 +47,15 @@ func sendRequest(
 	)
 
 	return client.Do(req)
+}
+
+// executeCommand executes a command in the given directory.
+func executeCommand(dir, command string, args ...string) error {
+	cmd := exec.Command(command, args...)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Dir = dir
+
+	return cmd.Run()
 }

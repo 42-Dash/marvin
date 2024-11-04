@@ -1,16 +1,15 @@
 package github
 
 import (
+	"dashinette/internals/logger"
 	"fmt"
 	"os"
-
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 // Returns the URL to clone the given repository.
 func cloneRepoUrl(repo_name string) string {
-	return fmt.Sprintf("https://github.com/%s/%s.git",
+	return fmt.Sprintf("https://%s@github.com/%s/%s.git",
+		os.Getenv("GITHUB_ACCESS"),
 		os.Getenv("GITHUB_ORGANISATION"),
 		repo_name,
 	)
@@ -27,14 +26,12 @@ func cloneRepoUrl(repo_name string) string {
 func CloneRepo(repo_name, destination string) error {
 	url := cloneRepoUrl(repo_name)
 
-	_, err := git.PlainClone(destination, false, &git.CloneOptions{
-		Auth: &http.BasicAuth{
-			Username: os.Getenv("GITHUB_ORGANISATION"),
-			Password: os.Getenv("GITHUB_ACCESS"),
-		},
-		URL:      url,
-		Progress: os.Stdout,
-	})
+	if _, err := os.Stat(destination); err == nil {
+		logger.Warn.Printf("Repository %s already exists, cloning is cancelled.", destination)
+		return nil
+	}
+
+	err := executeCommand(".", "git", "clone", url, destination)
 
 	return err
 }

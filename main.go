@@ -2,9 +2,11 @@ package main
 
 import (
 	"dashinette/internals/cli"
+	"dashinette/internals/logger"
 	"dashinette/pkg/parser"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/joho/godotenv"
 )
@@ -19,6 +21,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
+
+	logger.InitLogger()
+	defer logger.CloseFile()
+
 	cli.InteractiveCLI(participants)
 }
 
@@ -38,6 +44,20 @@ func init() {
 	for _, env := range variables {
 		if os.Getenv(env) == "" {
 			log.Fatalf("Error: %s not found in .env", env)
+		}
+	}
+
+	imageName := os.Getenv("DOCKER_IMAGE_NAME")
+
+	// Check if the Docker image exists
+	cmd := exec.Command("docker", "image", "inspect", imageName)
+	if err := cmd.Run(); err != nil {
+		log.Printf("Docker image %s not found. Building it...", imageName)
+		buildCmd := exec.Command("docker", "build", "-t", imageName, ".")
+		buildCmd.Stdout = os.Stdout
+		buildCmd.Stderr = os.Stderr
+		if err := buildCmd.Run(); err != nil {
+			log.Fatalf("Failed to build Docker image %s: %v", imageName, err)
 		}
 	}
 }

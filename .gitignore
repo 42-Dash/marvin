@@ -21,3 +21,4 @@ dashes/marvin/**/objs/
 # Sensitivity data
 dashes/marvin/traces/*
 dashes/marvin/repos/*
+app.log

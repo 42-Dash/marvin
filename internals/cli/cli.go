@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"dashinette/internals/logger"
 	"dashinette/pkg/parser"
 	"fmt"
 	"log"
@@ -62,7 +63,8 @@ func InteractiveCLI(settings parser.Participants) {
 	}
 	rerenderHeader(headerTemplate)
 
-	for {
+	loop := true
+	for loop {
 		_, result, err := prompt.Run()
 		if err != nil {
 			log.Fatal(err)
@@ -85,10 +87,9 @@ func InteractiveCLI(settings parser.Participants) {
 		case CreateResultsValue:
 			createResults(settings)
 		case ExitValue:
-			fmt.Println("Exiting...")
-			os.Exit(0)
-		default:
-			fmt.Println("Not implemented yet")
+			loop = false
 		}
+		logger.Flush()
 	}
+	logger.Info.Println("Session is over")
 }

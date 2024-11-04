@@ -31,7 +31,7 @@ tasks:
   clean:
     desc: Clean the project
     cmds:
-      - rm -f dashinette
+      - rm -f dashinette tester
       - rm -rf dashes/marvin/repos/*
       - rm -rf dashes/marvin/traces/*
 
@@ -50,8 +50,11 @@ tasks:
     silent: true
     desc: Show this help message
     cmds:
-      - echo "build - build the project"
-      - echo "run - build and run the project"
-      - echo "clean - clean the project"
-      - echo "clean-repos - remove the organization repositories"
-      - echo "help - show this help message"
+      - echo "run          - build and run the project"
+      - echo "build        - build the project"
+      - echo "build-tester - build the tester (just for development)"
+      - echo "build-docker - rebuild the Docker image"
+      - echo "clean        - clean the project"
+      - echo "clean-repos  - remove the organization repositories"
+      - echo "test         - run all the tests"
+      - echo "help         - show this help message"
