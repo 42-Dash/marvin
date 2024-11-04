@@ -16,6 +16,10 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 )
 
+// dockerImageName is the name of the docker image used to run the tester.
+// doesnt really matter for the dashinette project
+const DockerImageName = "dashinette-tester"
+
 // creates a new docker client.
 func setupDockerClient() (cli *client.Client, err error) {
 	cli, err = client.NewClientWithOpts(
@@ -29,7 +33,7 @@ func launchContainer(ctx context.Context, client *client.Client, team parser.Tea
 	dir, _ := os.Getwd()
 	config := parser.SerializeTesterConfig(team, repo, tracesfile)
 	containerConfig := &container.Config{
-		Image:      os.Getenv("DOCKER_IMAGE_NAME"),
+		Image:      DockerImageName,
 		Cmd:        []string{"sh", "-c", fmt.Sprintf("./tester '%v'", config)},
 		WorkingDir: "/app",
 	}

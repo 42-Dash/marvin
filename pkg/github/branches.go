@@ -28,7 +28,7 @@ func SwitchBranch(repoPath string, branch string) (err error) {
 		return fmt.Errorf("failed to create branch: %w", err)
 	}
 
-	err = executeCommand(repoPath, "git", "push", "origin", branch)
+	err = executeCommand(repoPath, "git", "push", "-f", "origin", branch)
 	if err != nil {
 		return fmt.Errorf("failed to push branch: %w", err)
 	}

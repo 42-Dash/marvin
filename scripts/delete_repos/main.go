@@ -31,7 +31,7 @@ func confirmation() {
 }
 
 func main() {
-	participants, err := parser.LoadParticipantsJSON("participants.json")
+	participants, err := parser.LoadParticipantsJSON()
 	if err != nil {
 		log.Fatalf("Error loading participants: %v", err)
 	}
@@ -41,7 +41,7 @@ func main() {
 
 // Checks if all required environment variables are set.
 func init() {
-	err := godotenv.Load()
+	err := godotenv.Load("config/.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}

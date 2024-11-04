@@ -7,6 +7,8 @@ import (
 	"regexp"
 )
 
+const ParticipantsFile = "config/participants.json"
+
 // Team represents a team of participants.
 type Team struct {
 	Name      string   `json:"name"`
@@ -107,8 +109,8 @@ func (p *Participants) Validate() error {
 // Returns:
 //   - Participants: The participants object.
 //   - error: An error object if an error occurred, otherwise nil.
-func LoadParticipantsJSON(filename string) (Participants, error) {
-	file, err := os.Open(filename)
+func LoadParticipantsJSON() (Participants, error) {
+	file, err := os.Open(ParticipantsFile)
 	if err != nil {
 		return Participants{}, err
 	}
