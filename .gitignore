@@ -9,7 +9,9 @@ participants.json
 maps.json
 
 # Executables and object files
+bin/*
 dashinette
+tester
 dashes/marvin/**/marvin
 dashes/marvin/**/objs/
 *.o
@@ -17,5 +19,6 @@ dashes/marvin/**/objs/
 *.a
 
 # Sensitivity data
-traces/*
-repo/*
+dashes/marvin/traces/*
+dashes/marvin/repos/*
+app.log

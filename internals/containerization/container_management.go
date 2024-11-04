@@ -4,6 +4,8 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
+	"dashinette/internals/logger"
+	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
@@ -32,17 +34,19 @@ func launchContainer(ctx context.Context, client *client.Client, team parser.Tea
 		WorkingDir: "/app",
 	}
 	hostConfig := &container.HostConfig{
-		Binds:      []string{fmt.Sprintf("%s/traces:/app/traces", dir)},
+		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, traces.DashFolder)},
 		AutoRemove: false,
 	}
 
 	resp, err := client.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
 	if err != nil {
+		logger.Error.Printf("Team %s, error creating container: %v\n", team.Name, err)
 		return "", err
 	}
 
 	err = copyToContainer(ctx, client, resp.ID, repo, "/app")
 	if err != nil {
+		logger.Error.Printf("Team %s, error copying files to container: %v\n", team.Name, err)
 		return "", err
 	}
 
@@ -60,13 +64,16 @@ func waitForContainer(ctx context.Context, client *client.Client, containerID st
 	select {
 	case err := <-errCh:
 		if err != nil {
+			logger.Info.Printf("Team %s, error waiting for container: %v\n", containerID, err)
 			return "", err
 		}
 	case <-statusCh:
+		logger.Info.Printf("Team %s, container finished\n", containerID)
 	}
 
 	output, err := client.ContainerLogs(ctx, containerID, container.LogsOptions{ShowStdout: false, ShowStderr: true})
 	if err != nil {
+		logger.Error.Printf("Team %s, error getting logs: %v\n", containerID, err)
 		return "", err
 	}
 
@@ -77,6 +84,7 @@ func waitForContainer(ctx context.Context, client *client.Client, containerID st
 	}
 
 	if stderr.Len() > 0 {
+		logger.Warn.Printf("Team %s, stderr: %s\n", containerID, stderr.String())
 		return "", fmt.Errorf("stderr: %s", stderr.String())
 	}
 
@@ -87,43 +95,45 @@ func waitForContainer(ctx context.Context, client *client.Client, containerID st
 func inspectContainerExitCode(ctx context.Context, client *client.Client, containerID string) (int, error) {
 	inspect, err := client.ContainerInspect(ctx, containerID)
 	if err != nil {
+		logger.Error.Printf("Error inspecting container: %v\n", err)
 		return 0, err
 	}
 	return inspect.State.ExitCode, nil
 }
 
 // runs the docker container for the given team and returns the logs.
-func runContainerized(team parser.Team, repo string, tracesfile string) (string, error) {
+func runContainerized(team parser.Team, repo string, tracesfile string) error {
 	ctx := context.Background()
 
 	client, err := setupDockerClient()
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	containerID, err := launchContainer(ctx, client, team, repo, tracesfile)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	logs, err := waitForContainer(ctx, client, containerID)
+	logger.Info.Printf("Team %s, logs: %s\n", team.Name, logs)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	exitCode, err := inspectContainerExitCode(ctx, client, containerID)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if exitCode != 0 {
-		return "", fmt.Errorf("container exited with code %d", exitCode)
+		return fmt.Errorf("container exited with code %d", exitCode)
 	}
 
 	if err := client.ContainerRemove(ctx, containerID, container.RemoveOptions{}); err != nil {
-		return "", err
+		return err
 	}
 
-	return logs, nil
+	return nil
 }
 
 // grades the assignment for the given team.
@@ -132,21 +142,24 @@ func runContainerized(team parser.Team, repo string, tracesfile string) (string,
 func GradeAssignmentInContainer(team parser.Team, repo string, filename string) error {
 	// delete file if it exists
 	if _, err := os.Stat(filename); err == nil {
+		logger.Warn.Printf("Executable %s already exists, deleting it\n", filename)
 		if err := os.Remove(filename); err != nil {
+			logger.Error.Printf("Error deleting executable: %v\n", err)
 			return fmt.Errorf("failed to delete file: %v", err)
 		}
 	}
 
-	logs, err := runContainerized(team, repo, filename)
+	err := runContainerized(team, repo, filename)
 	if err != nil {
+		logger.Error.Printf("Team %s error running docker container: %v\n", team.Name, err)
 		return fmt.Errorf("failed to run docker container: %v", err)
 	}
 
 	if _, err := os.Stat(filename); err == os.ErrNotExist {
+		logger.Error.Printf("Executable %s not found\n", filename)
 		return fmt.Errorf("cannot create log file")
 	}
 
-	fmt.Println(logs)
 	return err
 }
 
@@ -169,19 +182,22 @@ func copyToContainer(ctx context.Context, cli *client.Client, containerID, srcPa
 		if fi.Mode().IsRegular() {
 			data, err := os.ReadFile(file)
 			if err != nil {
+				logger.Error.Printf("Error reading file: %v", err)
 				return err
 			}
 
 			header := &tar.Header{
-				Name:    filepath.ToSlash(file),
+				Name:    traces.GetRepoPathContainerized(file),
 				Mode:    int64(fi.Mode().Perm()),
 				Size:    fi.Size(),
 				ModTime: fi.ModTime(),
 			}
 			if err := tw.WriteHeader(header); err != nil {
+				logger.Error.Printf("Error writing header: %v", err)
 				return err
 			}
 			if _, err := tw.Write(data); err != nil {
+				logger.Error.Printf("Error writing data: %v", err)
 				return err
 			}
 		}

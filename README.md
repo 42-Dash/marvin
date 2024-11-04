@@ -1,3 +1,9 @@
+## TODO
+
+#### Flushing does not work for the loggers.
+
+#### The output of commands like `git clone` and `git push` should be logged instead of printed to the console.
+
 # Dash
 
 This repository contains a script to manage GitHub repositories for a competition. The script allows you to create repositories, add collaborators with specific permissions, and restrict access to repositories once the competition is over.

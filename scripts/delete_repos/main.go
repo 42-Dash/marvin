@@ -1,19 +1,41 @@
 package main
 
 import (
+	"bufio"
 	"dashinette/pkg/github"
 	"dashinette/pkg/parser"
+	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
+
+func confirmation() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Are you sure you want to remove the organization repositories? (yes/no): ")
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		os.Exit(0)
+	}
+
+	response = strings.TrimSpace(strings.ToLower(response))
+	if response != "yes" {
+		fmt.Println("Action canceled.")
+		os.Exit(0)
+	}
+
+	fmt.Println("Proceeding with the action...")
+}
 
 func main() {
 	participants, err := parser.LoadParticipantsJSON("participants.json")
 	if err != nil {
 		log.Fatalf("Error loading participants: %v", err)
 	}
+	confirmation()
 	deleteRepos(participants)
 }
 

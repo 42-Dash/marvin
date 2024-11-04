@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
+	"dashinette/internals/logger"
+	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
@@ -20,67 +22,73 @@ func fileExists(path string) bool {
 
 // Compiles the project and
 func compileProject(config parser.TesterConfig) error {
-	if fileExists(config.Repo + "/" + EXECUTABLE_NAME) {
-		err := os.Remove(config.Repo + "/" + EXECUTABLE_NAME)
-		if err != nil {
-			return err
-		}
+	if fileExists(config.Args.RepoPath + "/" + EXECUTABLE_NAME) {
+		os.Remove(config.Args.RepoPath + "/" + EXECUTABLE_NAME)
 	}
 
-	if !fileExists(config.Repo+"/Makefile") && !fileExists(config.Repo+"/makefile") {
-		return fmt.Errorf("Makefile not found")
+	if !fileExists(config.Args.RepoPath + "/Makefile") {
+		// logger.Error.Printf("Team %s Makefile not found", config.Args.TeamName)
+		return fmt.Errorf("error: Makefile not found")
 	}
 
-	cmd := exec.Command("/usr/bin/make", "-C", config.Repo)
-	// read stdout and stderr
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
+	cmd := exec.Command("/usr/bin/make", "-C", config.Args.RepoPath)
+
+	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
 	err := cmd.Run()
 
 	if err != nil {
-		return fmt.Errorf("Compilation error: %v", stderr.String())
+		// logger.Error.Printf("Team %s error compiling project: %v", config.Args.TeamName, err)
+		return fmt.Errorf("error: %v", stderr.String())
 	}
 
-	fmt.Printf("repo {%v}\n", config.Repo)
-
-	return err
+	return nil
 }
 
-func MultistageGraderWithTraces(config parser.TesterConfig) (err error) {
-	if _, err = os.Stat(config.Tracesfile); err == nil {
-		os.Remove(config.Tracesfile)
-	}
-
-	traces, err := os.Create(config.Tracesfile)
-	if err != nil {
-		return
-	}
-	defer traces.Close()
-
-	if err = compileProject(config); err != nil {
-		traces.Write([]byte(fmt.Sprintf("Compilation error: %v", err)))
-		return
-	}
-
-	var gradingFunction func(string, string, int) (int, error)
-	switch config.League {
+func selectGradingFunction(league string) func(string, string, int) (string, int, error) {
+	switch league {
 	case "rookie":
-		gradingFunction = rookie.GradeRookieLeagueAssignment
+		return rookie.GradeRookieLeagueAssignment
 	case "open":
-		gradingFunction = open.GradeOpenLeagueAssignment
+		return open.GradeOpenLeagueAssignment
+	default:
+		return nil
+	}
+}
+
+func MultistageGraderWithTraces(config parser.TesterConfig) error {
+	_, err := os.Stat(traces.GetTracesPath(config.Args.TeamName))
+	if err == nil {
+		os.Remove(traces.GetTracesPath(config.Args.TeamName))
+	}
+	tr := traces.NewLogger()
+	defer tr.StoreInFile(traces.GetTracesPathContainerized(config.Args.TeamName))
+
+
+	if err := compileProject(config); err != nil {
+		tr.AddCompilation(err.Error())
+		return nil
+	} else {
+		tr.AddCompilation("OK")
 	}
 
-	for repo := range config.Maps {
-		res, err := gradingFunction(config.Repo+"/"+EXECUTABLE_NAME, config.Maps[repo].Path, config.Maps[repo].Timeout)
-		if err != nil {
-			traces.Write([]byte(fmt.Sprintf("Error grading assignment: %v", err)))
-			break
+	var gradingFunction = selectGradingFunction(config.Args.League)
+
+	for _, repo := range config.Maps {
+		_, res, err := gradingFunction(
+			config.Args.RepoPath+"/"+EXECUTABLE_NAME,
+			repo.Path,
+			repo.Timeout,
+		)
+		if err == nil {
+			tr.AddStage(repo.Path, res, "OK")
+			logger.Info.Printf("Team %s graded map %s: %d", config.Args.TeamName, repo.Path, res)
 		} else {
-			traces.Write([]byte(fmt.Sprintf("Map %v passed with score %v", config.Maps[repo].Name, res)))
+			tr.AddStage(repo.Path, res, err.Error())
+			logger.Info.Printf("Team %s error grading map %s: %v", config.Args.TeamName, repo.Path, err)
 		}
 	}
 
-	return
+	return nil
 }

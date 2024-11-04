@@ -2,119 +2,107 @@ package cli
 
 import (
 	"dashinette/internals/containerization"
+	"dashinette/internals/logger"
+	"dashinette/internals/traces"
 	"dashinette/pkg/github"
 	"dashinette/pkg/parser"
-	"fmt"
-	"log"
 )
 
-// Creates the repositories, without adding any collaborators.
-//
-// Parameters:
-//   - participants: The participants to add as collaborators.
-//
-// The function uses logs to print the status of the operation.
 func createRepos(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.CreateRepo(team.Name, true)
 		if err != nil {
-			log.Printf("Error creating repo for team %s: %v", team.Name, err)
+			logger.Error.Printf("Error creating repo for team %s: %v", team.Name, err)
 		} else {
-			log.Printf("Successfully created repo for team %s", team.Name)
+			logger.Info.Printf("Successfully created repo for team %s", team.Name)
 		}
 	}
 }
 
-// Adds the collaborators to their respective repositories.
-//
-// Parameters:
-//   - participants: The participants to add as collaborators.
-//
-// The function uses logs to print the status of the operation.
 func addCollaborators(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.SetCollaborators(team.Name, team.Nicknames, github.PUSH)
 		if err != nil {
-			log.Printf("Error adding collaborators to team %s: %v", team.Name, err)
+			logger.Error.Printf("Error adding collaborators to team %s: %v", team.Name, err)
 		} else {
-			log.Printf("Successfully added collaborators to team %s", team.Name)
+			logger.Info.Printf("Successfully added collaborators to team %s", team.Name)
 		}
 	}
 }
 
-// Grades the works, creating the results.json file.
-//
-// Parameters:
-//   - participants: The participants to add as collaborators.
-//
-// The function uses logs to print the status of the operation.
-func gradeWorks(parser.Participants) {
+func cloneRepos(participants parser.Participants) (ok bool) {
+	ok = true
+	for _, team := range participants.Teams {
+		err := github.CloneRepo(team.Name, traces.GetRepoPath(team.Name))
+		if err != nil {
+			logger.Error.Printf("Error cloning repo for team %s: %v", team.Name, err)
+			ok = false
+		} else {
+			logger.Info.Printf("Successfully cloned repo for team %s", team.Name)
+		}
+	}
+	return
+}
+
+func pushSubjects(participants parser.Participants) {
+	if !cloneRepos(participants) {
+		logger.Error.Println("Error cloning repos, cannot push subjects")
+		return
+	}
+	for _, team := range participants.Teams {
+		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), "README.md", "add subjects", "main")
+		if err != nil {
+			logger.Error.Printf("Error pushing subjects for team %s: %v", team.Name, err)
+		} else {
+			logger.Info.Printf("Successfully pushed subjects for team %s", team.Name)
+		}
+	}
+}
+
+func evaluateAssignments(participants parser.Participants) {
+	if !cloneRepos(participants) {
+		logger.Error.Println("Error cloning repos, cannot push subjects")
+		return
+	}
+	for _, team := range participants.Teams {
+		err := containerization.GradeAssignmentInContainer(team, traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name))
+		if err != nil {
+			logger.Error.Printf("Error grading works for team %s: %v", team.Name, err)
+		} else {
+			logger.Info.Printf("Successfully graded works for team %s", team.Name)
+		}
+	}
+}
+
+func pushTraces(participants parser.Participants) {
+	for _, team := range participants.Teams {
+		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name), "Upload traces", "traces")
+		if err != nil {
+			logger.Error.Printf("Error pushing results for team %s: %v", team.Name, err)
+		} else {
+			logger.Info.Printf("Successfully pushed results for team %s", team.Name)
+		}
+	}
+}
+
+func createResults(participants parser.Participants) {
 	// for _, team := range participants.Teams {
-	// 	err := github.GradeWorks(team.Name)
+	// 	err := github.CreateBranch(team.Name, "traces")
 	// 	if err != nil {
-	// 		log.Printf("Error grading works for team %s: %v", team.Name, err)
+	// 		log.Printf("Error creating branch for team %s: %v", team.Name, err)
 	// 	} else {
-	// 		log.Printf("Successfully graded works for team %s", team.Name)
+	// 		log.Printf("Successfully created branch for team %s", team.Name)
 	// 	}
 	// }
-	fmt.Println("Grade works")
 }
 
-// utils function that creates the traces file name.
-func getTracesFile(team parser.Team) string {
-	return fmt.Sprintf("traces/%s.log", team.Name)
-}
-
-func getCloningPath(team parser.Team) string {
-	return fmt.Sprintf("repo/%s", team.Name)
-}
-
-// Grades the works with traces, pushing the results to the repositories.
-//
-// Parameters:
-//   - participants: The participants to add as collaborators.
-//
-// The function uses logs to print the status of the operation.
-func gradeWorksWithTraces(participants parser.Participants) {
-	for _, team := range participants.Teams {
-		err := github.CloneRepo(team.Name, getCloningPath(team))
-		if err != nil {
-			log.Printf("Error cloning repo for team %s: %v", team.Name, err)
-		} else {
-			log.Printf("Successfully cloned repo for team %s", team.Name)
-		}
-	}
-	for _, team := range participants.Teams {
-		err := containerization.GradeAssignmentInContainer(team, getCloningPath(team), getTracesFile(team))
-		if err != nil {
-			log.Printf("Error grading works for team %s: %v", team.Name, err)
-		} else {
-			log.Printf("Successfully graded works for team %s", team.Name)
-		}
-	}
-	for _, team := range participants.Teams {
-		err := github.PushResults(team, getTracesFile(team))
-		if err != nil {
-			log.Printf("Error pushing results for team %s: %v", team.Name, err)
-		} else {
-			log.Printf("Successfully pushed results for team %s", team.Name)
-		}
-	}
-}
-
-// Restricts the repositories to read-only. (End of the competition)
-//
-// Parameters:
-//   - participants: The participants to add as collaborators.
-//
-// The function uses logs to print the status of the operation.
 func setReposReadOnly(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.SetCollaborators(team.Name, team.Nicknames, github.READ)
 		if err != nil {
-			log.Printf("Error restricting collaborators for team %s: %v", team.Name, err)
+			logger.Error.Printf("Error restricting collaborators for team %s: %v", team.Name, err)
 		} else {
-			log.Printf("Successfully restricted collaborators for team %s", team.Name)
+			logger.Info.Printf("Successfully restricted collaborators for team %s", team.Name)
 		}
 	}
 }

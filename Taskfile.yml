@@ -10,7 +10,7 @@ tasks:
     desc: Run the project after building
     cmds:
       - task: build
-      - defer: { task: clean }
+      - defer: rm -f dashinette
       - ./dashinette
 
   build:
@@ -18,39 +18,43 @@ tasks:
     cmds:
       - go build -o dashinette main.go
 
+  build-tester:
+    desc: Build the project
+    cmds:
+      - go build -o tester cmd/tester/main.go
+
+  build-docker:
+    desc: Rebuild the Docker image
+    cmds:
+      - docker build -t dashinette-tester .
+
   clean:
     desc: Clean the project
     cmds:
-      - rm -f dashinette
-
-  fclean:
-    desc: Deletes the cloned repositories and generated traces
-    cmds:
-      - rm -rf repo/*
-      - rm -rf traces/*
+      - rm -f dashinette tester
+      - rm -rf dashes/marvin/repos/*
+      - rm -rf dashes/marvin/traces/*
 
   clean-repos:
     desc: Remove the organization repositories
     cmds:
-      - go run scripts/deleteRepos.go
+      - go run scripts/delete_repos/main.go
 
-  test-grader:
-    desc: Run the tests
+  test:
+    desc: Run all the tests
     cmds:
       - go test -count=1 ./internals/grader/rookie
       - go test -count=1 ./internals/grader/open
-
-  test-all:
-    desc: Run all the tests
-    cmds:
-      - task: test-grader
 
   help:
     silent: true
     desc: Show this help message
     cmds:
-      - echo "build - build the project"
-      - echo "run - build and run the project"
-      - echo "clean - clean the project"
-      - echo "clean-repos - remove the organization repositories"
-      - echo "help - show this help message"
+      - echo "run          - build and run the project"
+      - echo "build        - build the project"
+      - echo "build-tester - build the tester (just for development)"
+      - echo "build-docker - rebuild the Docker image"
+      - echo "clean        - clean the project"
+      - echo "clean-repos  - remove the organization repositories"
+      - echo "test         - run all the tests"
+      - echo "help         - show this help message"

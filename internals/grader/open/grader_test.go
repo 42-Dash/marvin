@@ -66,7 +66,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_MissedCharacter(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_MISSED_CHARACTER,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -76,7 +76,7 @@ func TestGradeOpenLeagueAssignment_OL_MissedCharacter(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_Underflow(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_UNDERFLOW,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -86,7 +86,7 @@ func TestGradeOpenLeagueAssignment_OL_Underflow(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_ExceedsMap(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_EXCEEDS_MAP,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -96,7 +96,7 @@ func TestGradeOpenLeagueAssignment_OL_ExceedsMap(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_Overflow(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_OVERFLOW,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -106,7 +106,7 @@ func TestGradeOpenLeagueAssignment_OL_Overflow(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_MissedNewLine(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_NEW_LINE,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -116,7 +116,7 @@ func TestGradeOpenLeagueAssignment_OL_MissedNewLine(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_InvalidTimeout(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_TIMEOUT,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -126,7 +126,7 @@ func TestGradeOpenLeagueAssignment_OL_InvalidTimeout(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_InvalidRunes(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_RUNES,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -136,7 +136,7 @@ func TestGradeOpenLeagueAssignment_OL_InvalidRunes(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_InvalidPath(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_PATH,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -146,7 +146,7 @@ func TestGradeOpenLeagueAssignment_OL_InvalidPath(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_NotLastPath(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_NOT_LAST_PATH,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -156,7 +156,7 @@ func TestGradeOpenLeagueAssignment_OL_NotLastPath(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_ValidTimeout(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_VALID_TIMEOUT,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
@@ -166,7 +166,7 @@ func TestGradeOpenLeagueAssignment_OL_ValidTimeout(t *testing.T) {
 }
 
 func TestGradeOpenLeagueAssignment_OL_ValidTest(t *testing.T) {
-	output, err := GradeOpenLeagueAssignment(
+	_, output, err := GradeOpenLeagueAssignment(
 		BIN+OPENLEAGUE_TEST,
 		OPEN_LEAGUE_VALID_MAP,
 		TIMEOUT)
