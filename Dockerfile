@@ -10,7 +10,7 @@ COPY /go.mod go.mod
 COPY /config/maps.json config/maps.json
 
 COPY /internals internals
-COPY /maps maps
+COPY /dashes/marvin/maps maps
 COPY /pkg pkg
 COPY /cmd/tester/main.go main.go
 
