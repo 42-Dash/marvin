@@ -20,12 +20,23 @@ type Team struct {
 //   - ASCII letters
 //   - digits
 //   - characters '.' '-' and '_'
-func (t *Team) Validate() error {
+func (t *Team) ValidateTeamMember() error {
 	re := regexp.MustCompile(`^[a-zA-Z0-9\.\-_]+$`)
 
 	if !re.MatchString(t.Name) {
 		return fmt.Errorf("invalid team name: %s", t.Name)
 	}
+
+	if len(t.Nicknames) == 0 {
+		return fmt.Errorf("empty team: %s", t.Name)
+	}
+
+	for _, nickname := range t.Nicknames {
+		if !re.MatchString(nickname) {
+			return fmt.Errorf("invalid nickname: %s", nickname)
+		}
+	}
+
 	return nil
 }
 
@@ -35,68 +46,31 @@ type Participants struct {
 	Teams []Team `json:"teams"`
 }
 
-// Validates if the team names are unique.
-func (p *Participants) validateDuplicates() error {
-	var errMessage string
-	unique := make(map[string]bool)
-
-	for _, team := range p.Teams {
-		if unique[team.Name] {
-			if errMessage == "" {
-				errMessage = fmt.Sprintf("team name is not unique: %s", team.Name)
-			} else {
-				errMessage = fmt.Sprintf("%s; team name is not unique: %s", errMessage, team.Name)
-			}
-		}
-		unique[team.Name] = true
-	}
-
-	if errMessage != "" {
-		return fmt.Errorf("validation errors: %v", errMessage)
-	}
-	return nil
-}
-
-// Validate validates the participants object.
+// Checks if the team names and nicknames are unique.
 func (p *Participants) validateTeams() error {
 	if len(p.Teams) == 0 {
 		return fmt.Errorf("no teams found")
 	}
-	var errs string
+
 	for _, team := range p.Teams {
-		if err := team.Validate(); err != nil {
-			if len(errs) == 0 {
-				errs = err.Error()
-			} else {
-				errs = fmt.Sprintf("%s; %s", errs, err)
+		if err := team.ValidateTeamMember(); err != nil {
+			return err
+		}
+	}
+
+	teams := make(map[string]bool)
+	nicknames := make(map[string]bool)
+	for _, team := range p.Teams {
+		if teams[team.Name] {
+			return fmt.Errorf("duplicate team name: %s", team.Name)
+		}
+		teams[team.Name] = true
+		for _, nickname := range team.Nicknames {
+			if nicknames[nickname] {
+				return fmt.Errorf("duplicate nickname: %s in team %v", nickname, team.Name)
 			}
+			nicknames[nickname] = true
 		}
-	}
-	if len(errs) > 0 {
-		return fmt.Errorf("validation errors: %v", errs)
-	}
-	return nil
-}
-
-// Validates the participants object.
-// Checks if there are any teams and if each team name is valid and unique.
-func (p *Participants) Validate() error {
-	var errs string
-
-	if err := p.validateTeams(); err != nil {
-		errs = err.Error()
-	}
-
-	if err := p.validateDuplicates(); err != nil {
-		if len(errs) == 0 {
-			errs = err.Error()
-		} else {
-			errs = fmt.Sprintf("%s; %s", errs, err)
-		}
-	}
-
-	if len(errs) > 0 {
-		return fmt.Errorf("validation errors: %v", errs)
 	}
 	return nil
 }
@@ -110,19 +84,21 @@ func (p *Participants) Validate() error {
 //   - Participants: The participants object.
 //   - error: An error object if an error occurred, otherwise nil.
 func LoadParticipantsJSON() (Participants, error) {
+	participants := Participants{}
 	file, err := os.Open(ParticipantsFile)
 	if err != nil {
 		return Participants{}, err
 	}
 	defer file.Close()
 
-	participants := Participants{}
 	err = json.NewDecoder(file).Decode(&participants)
 	if err != nil {
 		return Participants{}, err
 	}
-	if err := participants.Validate(); err != nil {
+
+	if err := participants.validateTeams(); err != nil {
 		return Participants{}, err
 	}
+
 	return participants, nil
 }
