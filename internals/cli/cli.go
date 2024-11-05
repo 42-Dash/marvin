@@ -104,7 +104,9 @@ func InteractiveCLI(settings parser.Participants) {
 		case EvaluateSubmissionsValue:
 			evaluateAssignments(settings)
 		case PushTracesValue:
-			pushTraces(settings)
+			if aprovedAction("Push traces") {
+				pushTraces(settings)
+			}
 		case CreateResultsValue:
 			createResults(settings)
 		case ExitValue:

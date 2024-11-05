@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const DOTENV_PATH = "config/.env"
 
 // Main function to start the CLI.
 // It prompts the user to enter the path to the participants file.
@@ -30,7 +31,7 @@ func main() {
 
 // Checks if all required environment variables are set.
 func init() {
-	err := godotenv.Load("config/.env")
+	err := godotenv.Load(DOTENV_PATH)
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}

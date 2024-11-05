@@ -73,15 +73,17 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 	var gradingFunction = selectGradingFunction(config.Args.League)
 
 	for _, repo := range config.Maps {
-		_, res, err := gradingFunction(
+		fmt.Println("Repo: ", repo)
+		path, res, err := gradingFunction(
 			filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME),
 			repo.Path,
 			repo.Timeout,
 		)
+		fmt.Println("Path: ", path)
 		if err == nil {
-			tr.AddStage(repo.Path, res, "OK")
+			tr.AddStage(repo.Path, res, "OK", path)
 		} else {
-			tr.AddStage(repo.Path, res, err.Error())
+			tr.AddStage(repo.Path, res, err.Error(), path)
 		}
 	}
 

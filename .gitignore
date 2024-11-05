@@ -22,3 +22,5 @@ dashes/marvin/**/objs/
 dashes/marvin/traces/*
 dashes/marvin/repos/*
 app.log
+open_results.json
+rookie_results.json
