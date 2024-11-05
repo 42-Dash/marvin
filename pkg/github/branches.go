@@ -12,18 +12,16 @@ func isBranchExist(repoPath string, branch string) bool { // todo
 		"--quiet",
 		fmt.Sprintf("refs/heads/%s", branch),
 	)
-	return err != nil
+	return err == nil
 }
 
 // Creates a branch in the repository.
 func SwitchBranch(repoPath string, branch string) (err error) {
-
 	if isBranchExist(repoPath, branch) {
-		err = executeCommand(repoPath, "git", "checkout", "-b", branch)
-	} else {
-		err = executeCommand(repoPath, "git", "switch", branch)
+		return executeCommand(repoPath, "git", "switch", branch)
 	}
 
+	err = executeCommand(repoPath, "git", "checkout", "-b", branch)
 	if err != nil {
 		return fmt.Errorf("failed to create branch: %w", err)
 	}

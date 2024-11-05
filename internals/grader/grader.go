@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 const EXECUTABLE_NAME = "marvin"
@@ -21,8 +22,8 @@ func fileExists(path string) bool {
 
 // Compiles the project and
 func compileProject(config parser.TesterConfig) error {
-	if fileExists(config.Args.RepoPath + "/" + EXECUTABLE_NAME) {
-		os.Remove(config.Args.RepoPath + "/" + EXECUTABLE_NAME)
+	if fileExists(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME)) {
+		os.Remove(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME))
 	}
 
 	if !fileExists(config.Args.RepoPath + "/Makefile") {
@@ -73,7 +74,7 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 
 	for _, repo := range config.Maps {
 		_, res, err := gradingFunction(
-			config.Args.RepoPath+"/"+EXECUTABLE_NAME,
+			filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME),
 			repo.Path,
 			repo.Timeout,
 		)

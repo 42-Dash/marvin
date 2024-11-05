@@ -27,8 +27,11 @@ func CloneRepo(repo_name, destination string) error {
 	url := cloneRepoUrl(repo_name)
 
 	if _, err := os.Stat(destination); err == nil {
-		logger.Warn.Printf("Repository %s already exists, cloning is cancelled.", destination)
-		return nil
+		logger.Warn.Printf("Repository %s already exists, deleting it", destination)
+		if err := os.RemoveAll(destination); err != nil {
+			logger.Error.Printf("Error deleting repository: %v", err)
+			return fmt.Errorf("failed to delete repository: %v", err)
+		}
 	}
 
 	err := executeCommand(".", "git", "clone", url, destination)

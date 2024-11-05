@@ -72,7 +72,7 @@ func waitForContainer(ctx context.Context, client *client.Client, containerID st
 			return "", err
 		}
 	case <-statusCh:
-		logger.Info.Printf("Team %s, container finished\n", containerID)
+		logger.Info.Printf("Container %s: container finished\n", containerID)
 	}
 
 	output, err := client.ContainerLogs(ctx, containerID, container.LogsOptions{ShowStdout: false, ShowStderr: true})
@@ -146,9 +146,9 @@ func runContainerized(team parser.Team, repo string, tracesfile string) error {
 func GradeAssignmentInContainer(team parser.Team, repo string, filename string) error {
 	// delete file if it exists
 	if _, err := os.Stat(filename); err == nil {
-		logger.Warn.Printf("Executable %s already exists, deleting it\n", filename)
+		logger.Warn.Printf("File %s already exists, deleting it\n", filename)
 		if err := os.Remove(filename); err != nil {
-			logger.Error.Printf("Error deleting executable: %v\n", err)
+			logger.Error.Printf("Error deleting file: %v\n", err)
 			return fmt.Errorf("failed to delete file: %v", err)
 		}
 	}
