@@ -40,6 +40,24 @@ func rerenderHeader(header string) {
 	fmt.Print(header)
 }
 
+// aprovedAction asks the user if they want to proceed with the action.
+func aprovedAction(action string) bool {
+	prompt := promptui.Prompt{
+		Label:     fmt.Sprintf("Do you want to proceed with %s?", action),
+		IsConfirm: true,
+	}
+	result, err := prompt.Run()
+	if err != nil && err.Error() != "" {
+		log.Fatal(err)
+	}
+	if result != "y" {
+		logger.Warn.Printf("Skipping %s", action)
+		return false
+	}
+	logger.Info.Printf("Proceeding with %s", action)
+	return true
+}
+
 // InteractiveCLI is the main entry point for the CLI.
 //
 // Parameters:
@@ -75,7 +93,9 @@ func InteractiveCLI(settings parser.Participants) {
 		case CreateRepoValue:
 			createRepos(settings)
 		case PushSubjectsValue:
-			pushSubjects(settings)
+			if aprovedAction("Push subjects") {
+				pushSubjects(settings)
+			}
 		case AddCollaboratorValue:
 			addCollaborators(settings)
 		case SetReposReadOnlyValue:

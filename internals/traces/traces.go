@@ -3,6 +3,7 @@ package traces
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 type StageGrade struct {
@@ -47,4 +48,26 @@ func (t *Traces) AddStage(mapName string, grade int, status string) {
 func (t *Traces) StoreInFile(file string) error {
 	results, _ := json.Marshal(t)
 	return os.WriteFile(file, results, 0644)
+}
+
+func DeserializeMapsOnly(file string) []string {
+	data, err := os.ReadFile(file)
+
+	if err != nil {
+		return nil
+	}
+
+	var traces Traces
+	err = json.Unmarshal(data, &traces)
+
+	if err != nil {
+		return nil
+	}
+
+	var maps []string
+	for _, grade := range traces.Grades {
+		maps = append(maps, filepath.Join(DashFolder, grade.StageMap))
+	}
+
+	return maps
 }

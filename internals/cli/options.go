@@ -8,6 +8,8 @@ import (
 	"dashinette/pkg/parser"
 )
 
+const SUBJECT_PATH = "dashes/marvin/README.md"
+
 func createRepos(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.CreateRepo(team.Name, true)
@@ -50,7 +52,12 @@ func pushSubjects(participants parser.Participants) {
 		return
 	}
 	for _, team := range participants.Teams {
-		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), "README.md", "add subjects", "main")
+		err := github.UploadFileToRoot(
+			traces.GetRepoPath(team.Name),
+			[]string{SUBJECT_PATH},
+			"add subject",
+			"main",
+		)
 		if err != nil {
 			logger.Error.Printf("Error pushing subjects for team %s: %v", team.Name, err)
 		} else {
@@ -61,7 +68,7 @@ func pushSubjects(participants parser.Participants) {
 
 func evaluateAssignments(participants parser.Participants) {
 	if !cloneRepos(participants) {
-		logger.Error.Println("Error cloning repos, cannot push subjects")
+		logger.Error.Println("Error cloning repos, cannot push traces")
 		return
 	}
 	for _, team := range participants.Teams {
@@ -76,11 +83,19 @@ func evaluateAssignments(participants parser.Participants) {
 
 func pushTraces(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.UploadFileToRoot(traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name), "Upload traces", "traces")
+		err := github.UploadFileToRoot(
+			traces.GetRepoPath(team.Name),
+			append(
+				traces.DeserializeMapsOnly(traces.GetTracesPath(team.Name)),
+				traces.GetTracesPath(team.Name),
+			),
+			"Upload traces",
+			"traces",
+		)
 		if err != nil {
-			logger.Error.Printf("Error pushing results for team %s: %v", team.Name, err)
+			logger.Error.Printf("Error pushing traces for team %s: %v", team.Name, err)
 		} else {
-			logger.Info.Printf("Successfully pushed results for team %s", team.Name)
+			logger.Info.Printf("Successfully pushed traces for team %s", team.Name)
 		}
 	}
 }
