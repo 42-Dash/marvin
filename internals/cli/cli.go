@@ -13,14 +13,14 @@ import (
 
 // Constants for the different options in the CLI.
 const (
-	CreateRepoValue          = "Create repositories"
-	PushSubjectsValue        = "Push subjects"
-	AddCollaboratorValue     = "Add collaborators / write access"
-	SetReposReadOnlyValue    = "Set repositories to read-only"
-	EvaluateSubmissionsValue = "Evaluate the submissions / create traces"
-	PushTracesValue          = "Parse & Push traces to 'traces' branch"
-	CreateResultsValue       = "Parse & Create results.json file"
-	ExitValue                = "Exit"
+	InitializeReposTask         = "Initialize GitHub Organization Repositories"
+	UploadReadmesTask           = "Upload README Files to Repositories"
+	GrantCollaboratorAccessTask = "Grant Collaborator Write Access"
+	MakeReposReadOnlyTask       = "Configure Repositories as Read-Only"
+	AnalyzeSubmissionsTask      = "Clone and Analyze Submissions to Generate Traces"
+	UploadTracesTask            = "Parse and Upload Traces to 'traces' Branch"
+	GenerateResultsJSONTask     = "Parse Logs and Generate results.json"
+	ExitTask                    = "Exit"
 )
 
 // headerTemplate is the template for the header of the CLI.
@@ -69,14 +69,14 @@ func InteractiveCLI(settings parser.Participants) {
 	prompt := promptui.Select{
 		Label: "Select an action",
 		Items: []string{
-			CreateRepoValue,
-			PushSubjectsValue,
-			AddCollaboratorValue,
-			SetReposReadOnlyValue,
-			EvaluateSubmissionsValue,
-			PushTracesValue,
-			CreateResultsValue,
-			ExitValue,
+			InitializeReposTask,
+			UploadReadmesTask,
+			GrantCollaboratorAccessTask,
+			MakeReposReadOnlyTask,
+			AnalyzeSubmissionsTask,
+			UploadTracesTask,
+			GenerateResultsJSONTask,
+			ExitTask,
 		},
 		Size: 10,
 	}
@@ -91,25 +91,25 @@ func InteractiveCLI(settings parser.Participants) {
 		rerenderHeader(headerTemplate)
 
 		switch result {
-		case CreateRepoValue:
+		case InitializeReposTask:
 			createRepos(settings)
-		case PushSubjectsValue:
+		case UploadReadmesTask:
 			if aprovedAction("Push subjects") {
 				pushSubjects(settings)
 			}
-		case AddCollaboratorValue:
+		case GrantCollaboratorAccessTask:
 			addCollaborators(settings)
-		case SetReposReadOnlyValue:
+		case MakeReposReadOnlyTask:
 			setReposReadOnly(settings)
-		case EvaluateSubmissionsValue:
+		case AnalyzeSubmissionsTask:
 			evaluateAssignments(settings)
-		case PushTracesValue:
+		case UploadTracesTask:
 			if aprovedAction("Push traces") {
 				pushTraces(settings)
 			}
-		case CreateResultsValue:
+		case GenerateResultsJSONTask:
 			createResults(settings)
-		case ExitValue:
+		case ExitTask:
 			loop = false
 		}
 		logger.Flush()
