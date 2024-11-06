@@ -35,6 +35,14 @@ func characterPoints(character [3]byte) (int, int, int) {
 	return water, air, earth
 }
 
+// trims the path to remove the character points.
+func splitPath(path string) (string, string) {
+	if len(path) < 4 {
+		return path, ""
+	}
+	return path[:3], path[3:]
+}
+
 // validates the pattern of the path
 func isValidPath(path string) bool {
 	var character, steps string
@@ -44,8 +52,7 @@ func isValidPath(path string) bool {
 		return false
 	}
 
-	character = path[:3]
-	steps = path[3:]
+	character, steps = splitPath(path)
 
 	for _, chr := range character {
 		if !strings.ContainsRune("012345", chr) {
@@ -132,6 +139,7 @@ func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (
 	if err != nil {
 		return path, 0, err
 	}
+	_, trimmedPath := splitPath(path)
 
 	input, _ := os.ReadFile(inputfile)
 	inputStr := strings.Split(string(input), "\n")
@@ -139,7 +147,7 @@ func GradeOpenLeagueAssignment(filename string, inputfile string, timeout int) (
 	score, err := getScoreOpenLeague(path, inputStr)
 
 	if err != nil {
-		return path, 0, err
+		return trimmedPath, 0, err
 	}
-	return path, score, nil
+	return trimmedPath, score, nil
 }

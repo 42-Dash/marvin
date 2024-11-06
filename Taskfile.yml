@@ -34,6 +34,7 @@ tasks:
       - rm -f dashinette tester
       - rm -rf dashes/marvin/repos/*
       - rm -rf dashes/marvin/traces/*
+      - rm -rf open_results.json rookie_results.json
 
   clean-repos:
     desc: Remove the organization repositories

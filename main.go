@@ -49,14 +49,11 @@ func init() {
 
 	var imageName string = containerization.DockerImageName
 
-	cmd := exec.Command("docker", "image", "inspect", imageName)
-	if err := cmd.Run(); err != nil {
-		log.Printf("Docker image %s not found. Building it...", imageName)
-		buildCmd := exec.Command("docker", "build", "-t", imageName, ".")
-		buildCmd.Stdout = os.Stdout
-		buildCmd.Stderr = os.Stderr
-		if err := buildCmd.Run(); err != nil {
-			log.Fatalf("Failed to build Docker image %s: %v", imageName, err)
-		}
+	log.Printf("Building docker image %s...", imageName)
+	buildCmd := exec.Command("docker", "build", "-t", imageName, ".")
+	buildCmd.Stdout = os.Stdout
+	buildCmd.Stderr = os.Stderr
+	if err := buildCmd.Run(); err != nil {
+		log.Fatalf("Failed to build Docker image %s: %v", imageName, err)
 	}
 }
