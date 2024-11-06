@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -99,6 +100,21 @@ func sortResults(results *Results, order []int) {
 	results.Levels = sortedLevels
 }
 
+func serializeResults(results Results, filename string) {
+	original, err := json.Marshal(results)
+	if err != nil {
+		log.Fatalf("Error serializing results: %v", err)
+	}
+
+	var prettyJSON bytes.Buffer
+	json.Indent(&prettyJSON, original, "", "\t")
+
+	err = os.WriteFile(filename, prettyJSON.Bytes(), 0644)
+	if err != nil {
+		log.Fatalf("Error writing file: %v", err)
+	}
+}
+
 func main() {
 	validateArguments()
 
@@ -109,4 +125,6 @@ func main() {
 
 	sortResults(&results, order)
 	printOrder("\nOrder of levels after sorting:", results)
+
+	serializeResults(results, os.Args[1])
 }
