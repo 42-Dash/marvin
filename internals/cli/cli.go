@@ -78,7 +78,8 @@ func InteractiveCLI(settings parser.Participants) {
 			GenerateResultsJSONTask,
 			ExitTask,
 		},
-		Size: 10,
+		Size:     10,
+		HideHelp: true,
 	}
 	rerenderHeader(headerTemplate)
 
