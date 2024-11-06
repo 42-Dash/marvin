@@ -160,6 +160,7 @@ func main() {
 	verifyLeague(results)
 
 	var result Results = combineResults(results)
+	result.League = results[0].League
 	serializeResults(result, os.Args[1])
 
 	log.Println("Done!")
