@@ -101,14 +101,36 @@ func pushTraces(participants parser.Participants) {
 }
 
 func createResults(participants parser.Participants) {
-	// for _, team := range participants.Teams {
-	// 	err := github.CreateBranch(team.Name, "traces")
-	// 	if err != nil {
-	// 		log.Printf("Error creating branch for team %s: %v", team.Name, err)
-	// 	} else {
-	// 		log.Printf("Successfully created branch for team %s", team.Name)
-	// 	}
-	// }
+	var resultsRookie = make(map[string]traces.Traces)
+	var resultsOpen = make(map[string]traces.Traces)
+
+	for _, team := range participants.Teams {
+		record, err := traces.Deserialize(traces.GetTracesPath(team.Name))
+		if err != nil {
+			logger.Error.Printf("Error deserializing traces for team %s: %v", team.Name, err)
+		} else {
+			logger.Info.Printf("Successfully deserialized traces for team %s", team.Name)
+		}
+		if team.League == "rookie" {
+			resultsRookie[team.Name] = record
+		} else {
+			resultsOpen[team.Name] = record
+		}
+	}
+
+	err := traces.StoreResults(resultsRookie, "Rookie League", "rookie_results.json")
+	if err != nil {
+		logger.Error.Printf("Error storing results for rookie league: %v", err)
+	} else {
+		logger.Info.Println("Successfully stored results for rookie league")
+	}
+
+	err = traces.StoreResults(resultsOpen, "Open League", "open_results.json")
+	if err != nil {
+		logger.Error.Printf("Error storing results for open league: %v", err)
+	} else {
+		logger.Info.Println("Successfully stored results for open league")
+	}
 }
 
 func setReposReadOnly(participants parser.Participants) {
