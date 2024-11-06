@@ -10,7 +10,7 @@ import (
 // structure of the generated traces.json file
 type StageGrade struct {
 	StageMap string `json:"map_path"`
-	Grade    int    `json:"score"`
+	Cost     int    `json:"cost"`
 	Status   string `json:"status"`
 	Path     string `json:"path"`
 }
@@ -18,7 +18,6 @@ type StageGrade struct {
 type Traces struct {
 	Compilation string       `json:"compilation"`
 	Grades      []StageGrade `json:"scores"`
-	FinalGrade  int          `json:"total_score"`
 }
 
 // contract for the Traces structure
@@ -33,7 +32,6 @@ func NewLogger() *Traces {
 	return &Traces{
 		Compilation: "OK",
 		Grades:      []StageGrade{},
-		FinalGrade:  0,
 	}
 }
 
@@ -51,11 +49,10 @@ func (t *Traces) AddCompilation(msg string) {
 func (t *Traces) AddStage(mapName string, grade int, status string, path string) {
 	t.Grades = append(t.Grades, StageGrade{
 		StageMap: mapName,
-		Grade:    grade,
+		Cost:     grade,
 		Status:   status,
 		Path:     path,
 	})
-	t.FinalGrade += grade
 }
 
 // stores the Traces structure in a file

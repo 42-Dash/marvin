@@ -51,7 +51,7 @@ func serializeResults(results Results, filename string) error {
 
 	var prettyJSON bytes.Buffer
 	json.Indent(&prettyJSON, original, "", "\t")
-	
+
 	return os.WriteFile(filename, prettyJSON.Bytes(), 0644)
 }
 
@@ -67,7 +67,7 @@ func groupByLevels(records map[string]Traces) map[string][]Group {
 			levels[trace.StageMap] = append(levels[trace.StageMap], Group{
 				Name:   teamName,
 				Status: trace.Status,
-				Score:  trace.Grade,
+				Score:  trace.Cost,
 				Path:   trace.Path,
 			})
 		}
