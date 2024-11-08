@@ -19,16 +19,16 @@ export default class DashLeaderboard extends HTMLElement
         gap: 1em;
         transition: 0.5s;
       }
-      
+
       :host * {
         font-family: var(--font-family);
         font-size: var(--font-size);
       }
-      
+
       .ranking-entry p, .ranking-header p {
         margin: 0; /* Remove default margin to eliminate additional space */
       }
-      
+
       .name {
         color: rgb(9, 3, 31);
         width: 50%;
@@ -40,7 +40,7 @@ export default class DashLeaderboard extends HTMLElement
         opacity: var(--current-points-opacity, 0);
         transition: opacity 0.2s;
       }
-      
+
       .ranking-entry, .ranking-header {
         display: flex;
         justify-content: space-around;
@@ -58,7 +58,7 @@ export default class DashLeaderboard extends HTMLElement
     const fragment = document.createDocumentFragment();
     fragment.appendChild(document.getElementById("ranking-header").cloneNode(true).content);
     this.shadow.appendChild(fragment);
-    
+
     // This resizes the canvases within when this custom HTML element is resized.
     this.resizeObserver = new ResizeObserver(_ => this.#resize());
     // This redraws the canvases within when new canvases are added.

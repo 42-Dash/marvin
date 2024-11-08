@@ -47,10 +47,10 @@ export default class DashLeaderboard {
       };
     }));
   }
-    
+
   renderLeaderboard() {
     const ranking = new Map();
-    
+
     this.gameData.groups.forEach((group, index) => {
       ranking.set(group.name, {
         total_score: 0,
@@ -60,7 +60,7 @@ export default class DashLeaderboard {
         colour: this.gameData.colorByGroupName(group.name),
       });
     });
-  
+
     for (let level = 0; level <= this.gameData.level; level++) {
       // Sort groups on this level
       const levelGroups = this.gameData.groupsAt(level);
@@ -75,15 +75,24 @@ export default class DashLeaderboard {
             && ((group.score != previousGroupInfo.cost) || (previousGroupInfo.status != "valid"))) {
             points--;
           }
-          ranking.set(group.name, {
-            ...savedGroupInfo,
-            status: group.status,
-            cost: group.score,
-            current_points: points,
-            total_score: savedGroupInfo.total_score + points
-          });
-        }
-        else {
+          if (level == 0) {
+            ranking.set(group.name, {
+              ...savedGroupInfo,
+              status: group.status,
+              cost: 0,
+              current_points: 0,
+              total_score: 0
+              }); // FIRST LEVEL CONFIG HARDCODED
+           } else {
+              ranking.set(group.name, {
+                ...savedGroupInfo,
+                status: group.status,
+                cost: group.score,
+                current_points: points,
+                total_score: savedGroupInfo.total_score + points
+              });
+            }
+        } else {
           ranking.set(group.name, {
             ...savedGroupInfo,
             status: group.status,
