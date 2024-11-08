@@ -2,6 +2,7 @@ export default class DashLeaderboard {
   constructor(gameData, leaderboard) {
     this.gameData = gameData;
     this.leaderboard = leaderboard;
+    this.started = false;
   }
 
   compareGroups(groupB, groupA) {
@@ -61,47 +62,42 @@ export default class DashLeaderboard {
       });
     });
 
-    for (let level = 0; level <= this.gameData.level; level++) {
-      // Sort groups on this level
+    for (let level = 0; this.started && level <= this.gameData.level; level++) {
       const levelGroups = this.gameData.groupsAt(level);
       levelGroups.sort(this.compareGroups);
+
       // Compute points for this level
       for (let i = 0, points = levelGroups.length + 1; i < levelGroups.length; i++) {
         const group = levelGroups[i];
         const savedGroupInfo = ranking.get(group.name);
-        if (group.status == 'valid') {
-          const previousGroupInfo = i > 0 ? ranking.get(levelGroups[i - 1].name) : null;
-          if ((previousGroupInfo != null )
-            && ((group.score != previousGroupInfo.cost) || (previousGroupInfo.status != "valid"))) {
-            points--;
-          }
-          if (level == 0) {
-            ranking.set(group.name, {
+
+        if (group.status != 'valid') {
+          ranking.set(group.name, {
               ...savedGroupInfo,
               status: group.status,
-              cost: 0,
+              cost: group.score,
               current_points: 0,
-              total_score: 0
-              }); // FIRST LEVEL CONFIG HARDCODED
-           } else {
-              ranking.set(group.name, {
-                ...savedGroupInfo,
-                status: group.status,
-                cost: group.score,
-                current_points: points,
-                total_score: savedGroupInfo.total_score + points
-              });
-            }
-        } else {
-          ranking.set(group.name, {
-            ...savedGroupInfo,
-            status: group.status,
-            cost: group.score,
-            current_points: 0,
-          });
+            });
+            break;
         }
+
+        const previousGroupInfo = i > 0 ? ranking.get(levelGroups[i - 1].name) : null;
+
+        if (previousGroupInfo != null
+          && (group.score != previousGroupInfo.cost || previousGroupInfo.status != "valid")) {
+          points--;
+        }
+
+        ranking.set(group.name, {
+          ...savedGroupInfo,
+          status: group.status,
+          cost: group.score,
+          current_points: points,
+          total_score: savedGroupInfo.total_score + points
+        });
       }
     }
+    this.started = true;
 
     const rankedGroups = [];
     ranking.forEach((value, key, map) => {
