@@ -12,7 +12,7 @@ import (
 
 // structure of the required results.json file
 type Group struct {
-	Name   string `json:"group"`
+	Name   string `json:"name"`
 	Status string `json:"status"`
 	Score  int    `json:"score"`
 	Path   string `json:"path"`
@@ -64,11 +64,17 @@ func groupByLevels(records map[string]Traces) map[string][]Group {
 
 	for teamName, traces := range records {
 		for _, trace := range traces.Grades {
+			status := "invalid"
+			path := ""
+			if trace.Status == "OK" {
+				status = "valid"
+				path = trace.Path
+			}
 			levels[trace.StageMap] = append(levels[trace.StageMap], Group{
 				Name:   teamName,
-				Status: trace.Status,
+				Status: status,
 				Score:  trace.Cost,
-				Path:   trace.Path,
+				Path:   path,
 			})
 		}
 	}

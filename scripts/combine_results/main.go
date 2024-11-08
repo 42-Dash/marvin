@@ -9,7 +9,7 @@ import (
 
 // structure of the required results.json file
 type Group struct {
-	Name   string `json:"group"`
+	Name   string `json:"name"`
 	Status string `json:"status"`
 	Score  int    `json:"score"`
 	Path   string `json:"path"`
