@@ -1,8 +1,9 @@
-FROM nginx:alpine
+FROM python:3.12.4-slim
 
-COPY /libraries /usr/share/nginx/html
-COPY /images /usr/share/nginx/html
-COPY /src /usr/share/nginx/html
-COPY /index.html /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+COPY . .
+
+EXPOSE 8080
+
+CMD ["python3", "-m", "http.server", "8080"]
