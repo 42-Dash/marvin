@@ -13,6 +13,18 @@ tasks:
       - defer: rm -f dashinette
       - ./dashinette
 
+  start-visualiser:
+    desc: Runs the visualiser
+    silent: true
+    cmds:
+      - cmd: echo "task start-visualiser FILE=<file>"
+      - go run scripts/start_visualiser/main.go {{.FILE}}
+
+  stop-visualiser:
+    desc: Stops the visualiser
+    cmds:
+      - go run scripts/stop_visualiser/main.go
+
   build:
     desc: Build the project
     cmds:
