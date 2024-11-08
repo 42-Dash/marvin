@@ -5,57 +5,56 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 const DOCKERFILE_PATH = "dashes/marvin/visualiser/"
-const DOCKER_IMAGE_NAME_PREFIX = "dashinette-visualiser"
+const DOCKER_IMAGE_NAME = "dashinette-visualiser"
+const DOCKER_CONTAINER_NAME = "visualiser"
 
-func createDockerImageName(name string) string {
-	name = strings.Split(name, ".")[0]
-	return DOCKER_IMAGE_NAME_PREFIX + "-" + name
-}
-
-func createDockerImage(name string) {
-	log.Printf("Building docker image %s...", name)
-	buildCmd := exec.Command("docker", "build", "-t", name, ".")
+func createDockerImage() {
+	log.Printf("Building docker image %s...", DOCKER_IMAGE_NAME)
+	buildCmd := exec.Command("docker", "build", "-t", DOCKER_IMAGE_NAME, ".")
 	buildCmd.Stdout = os.Stdout
 	buildCmd.Stderr = os.Stderr
 	buildCmd.Dir = DOCKERFILE_PATH
 	if err := buildCmd.Run(); err != nil {
-		log.Fatalf("Failed to build Docker image %s: %v", name, err)
+		log.Fatalf("Failed to build Docker image %s: %v", DOCKER_IMAGE_NAME, err)
 	}
 }
 
-func runDockerContainer(name string) {
-	log.Printf("Running docker container %s...", name)
-	runCmd := exec.Command("docker", "run", "-d", "-p", "8080:8080", name)
+func runDockerContainer() {
+	log.Printf("Running docker container %s...", DOCKER_IMAGE_NAME)
+	runCmd := exec.Command(
+		"docker", "run",
+		"--detach",
+		"--publish", "8080:8080",
+		"--name", DOCKER_CONTAINER_NAME,
+		DOCKER_IMAGE_NAME,
+	)
 	runCmd.Stdout = os.Stdout
 	runCmd.Stderr = os.Stderr
 	if err := runCmd.Run(); err != nil {
-		log.Fatalf("Failed to run Docker container %s: %v", name, err)
+		log.Fatalf("Failed to run Docker container %s: %v", DOCKER_IMAGE_NAME, err)
 	}
 }
 
-func copyFileToDockerDirectory(name string) {
+func copyFileToDockerDirectory() {
 	copyCmd := exec.Command("cp", os.Args[1], DOCKERFILE_PATH+"/results.json")
 	copyCmd.Stdout = os.Stdout
 	copyCmd.Stderr = os.Stderr
 	if err := copyCmd.Run(); err != nil {
-		log.Fatalf("Failed to copy file to container %s: %v", name, err)
+		log.Fatalf("Failed to copy file to container %s: %v", DOCKER_IMAGE_NAME, err)
 	}
 }
 
 func main() {
-	var name string = createDockerImageName(os.Args[1])
 
-	copyFileToDockerDirectory(name)
-	createDockerImage(name)
-	runDockerContainer(name)
+	copyFileToDockerDirectory()
+	createDockerImage()
+	runDockerContainer()
 
-	fmt.Println("")
-	fmt.Println("Visualiser is running at http://localhost:8080")
-	fmt.Println(name)
+	fmt.Println("\n\033[32mVisualiser is running at http://localhost:8080\033[0m")
+	fmt.Println("Container name:","\033[32m", DOCKER_CONTAINER_NAME, "\033[0m")
 }
 
 func init() {
