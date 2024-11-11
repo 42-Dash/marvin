@@ -1,7 +1,7 @@
 FROM golang:1.22.5
 
 # All dependencies required to build the Go project
-RUN apt-get update && apt-get install -y curl build-essential sudo
+RUN apt-get update && apt-get install -y curl build-essential sudo cargo
 
 WORKDIR /app
 
