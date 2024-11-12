@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-func readImage(row, col int) [][]uint8 {
-	file, err := os.Open(os.Args[3])
+func readImage(row, col int, filename string, inverted bool) [][]uint8 {
+	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +31,11 @@ func readImage(row, col int) [][]uint8 {
 			r, g, b, _ := img.At(j*width/col, i*heights/row).RGBA()
 			r, g, b = r/257, g/257, b/257
 			rg := float64(r+g+b) / 96.0
-			line = append(line, 8-uint8(math.Round(rg)))
+			if inverted {
+				line = append(line, uint8(math.Round(rg)))
+			} else {
+				line = append(line, 8-uint8(math.Round(rg)))
+			}
 		}
 		ans = append(ans, line)
 	}
@@ -61,14 +65,16 @@ func generateRookieMap(surfaces [][]uint8) string {
 func main() {
 	row, _ := strconv.Atoi(os.Args[1])
 	col, _ := strconv.Atoi(os.Args[2])
+	filename := os.Args[3]
+	inverted := os.Args[4] == "t"
 
-	surfaces := readImage(row, col)
+	surfaces := readImage(row, col, filename, inverted)
 	content := generateRookieMap(surfaces)
 
-	if len(os.Args) == 4 {
+	if len(os.Args) == 5 {
 		fmt.Print(content)
 	} else {
-		err := os.WriteFile(os.Args[4], []byte(content), 0644)
+		err := os.WriteFile(os.Args[5], []byte(content), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -76,8 +82,8 @@ func main() {
 }
 
 func init() {
-	if len(os.Args) != 4 && len(os.Args) != 5 {
-		log.Fatal("Usage: ./map_generator [rows] [cols] [image_file] <output_file_name>")
+	if len(os.Args) != 5 && len(os.Args) != 6 {
+		log.Fatal("Usage: ./map_generator [rows] [cols] [image_file.png] [invert option t/f] <output_file_name>")
 	}
 
 	rows, err := strconv.Atoi(os.Args[1])
@@ -92,6 +98,10 @@ func init() {
 
 	if _, err := os.Stat(os.Args[3]); err != nil {
 		log.Fatal(err)
+	}
+
+	if os.Args[4] != "t" && os.Args[4] != "f" {
+		log.Fatal("Invert option must be t (for true) or f (for false)")
 	}
 
 	if rows < 1 || cols < 1 || rows*cols < 2 {
