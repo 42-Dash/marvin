@@ -1,33 +1,31 @@
 package main
 
 import (
+	utils "dashinette/scripts/generators"
 	"fmt"
 	"image/png"
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"strings"
 )
-
-type Point struct {
-	row, col int
-}
 
 type RGB struct {
 	r, g, b uint32
 }
 
 var (
-	size     Point
-	start    Point
-	finish   Point
-	filename string
-	inverted bool
+	size          utils.Point
+	start         utils.Point
+	finish        utils.Point
+	imageFile     string
+	inverted      bool
+	printSolution bool
+	filename      string
 )
 
 func readImage() [][]RGB {
-	file, err := os.Open(filename)
+	file, err := os.Open(imageFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,10 +40,10 @@ func readImage() [][]RGB {
 	bounds := img.Bounds()
 	width, heights := bounds.Max.X, bounds.Max.Y
 
-	for i := 0; i < size.row; i++ {
+	for i := 0; i < size.Row; i++ {
 		line := []RGB{}
-		for j := 0; j < size.col; j++ {
-			r, g, b, _ := img.At(j*width/size.col, i*heights/size.row).RGBA()
+		for j := 0; j < size.Col; j++ {
+			r, g, b, _ := img.At(j*width/size.Col, i*heights/size.Row).RGBA()
 			line = append(line, RGB{r / 257, g / 257, b / 257})
 		}
 		ans = append(ans, line)
@@ -88,9 +86,9 @@ func generateOpenMap(surfaces [][]RGB) string {
 
 	for i := 0; i < len(surfaces); i++ {
 		for j := 0; j < len(surfaces[i]); j++ {
-			if i == start.row && j == start.col {
+			if i == start.Row && j == start.Col {
 				content.WriteString("MM")
-			} else if i == finish.row && j == finish.col {
+			} else if i == finish.Row && j == finish.Col {
 				content.WriteString("GG")
 			} else {
 				surf, value := getSurface(surfaces[i][j])
@@ -108,38 +106,15 @@ func main() {
 	surfaces := readImage()
 	content := generateOpenMap(surfaces)
 
-	if len(os.Args) == 6 {
+	if printSolution {
 		fmt.Print(content)
 	} else {
-		err := os.WriteFile(os.Args[6], []byte(content), 0644)
+		err := os.WriteFile(filename, []byte(content), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
+		fmt.Println("Done!")
 	}
-}
-
-func parsePoint(point string) Point {
-	parts := strings.Split(point, ":")
-
-	if len(parts) != 2 {
-		log.Fatal("Invalid point format, must be [row:col]")
-	}
-
-	row, err := strconv.Atoi(parts[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	col, err := strconv.Atoi(parts[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if col < 0 || row < 0 {
-		log.Fatal("Row and col must be greater than 0")
-	}
-
-	return Point{row, col}
 }
 
 func init() {
@@ -148,25 +123,26 @@ func init() {
 		log.Fatal("Usage: ./map_generator [size rows:cols] [start row:col] [end row:col] [image_file.png] [invert option t/f] <output_file_name>")
 	}
 
-	size = parsePoint(os.Args[1])
-	start = parsePoint(os.Args[2])
-	finish = parsePoint(os.Args[3])
-	filename = os.Args[4]
+	utils.ParseArr(os.Args[1], ":", &size.Row, &size.Col)
+	utils.ParseArr(os.Args[2], ":", &start.Row, &start.Col)
+	utils.ParseArr(os.Args[3], ":", &finish.Row, &finish.Col)
+	imageFile = os.Args[4]
 	inverted = os.Args[5] == "t"
 
-	if start.row >= size.row || start.col >= size.col {
+
+	if start.Row >= size.Row || start.Col >= size.Col || start.Row < 0 || start.Col < 0 {
 		log.Fatal("Start point is out of bounds")
 	}
 
-	if finish.row >= size.row || finish.col >= size.col {
+	if finish.Row >= size.Row || finish.Col >= size.Col || finish.Row < 0 || finish.Col < 0 {
 		log.Fatal("Finish point is out of bounds")
 	}
 
-	if start.col == finish.col && start.row == finish.row {
+	if start.Col == finish.Col && start.Row == finish.Row {
 		log.Fatal("Start and finish points are the same")
 	}
 
-	if _, err := os.Stat(filename); err != nil {
+	if _, err := os.Stat(imageFile); err != nil {
 		log.Fatal(err)
 	}
 
@@ -174,7 +150,13 @@ func init() {
 		log.Fatal("Invert option must be t (for true) or f (for false)")
 	}
 
-	if size.row < 1 || size.col < 1 || size.row*size.col < 2 {
+	if size.Row < 1 || size.Col < 1 || size.Row*size.Col < 2 {
 		log.Fatal("Not enough space for start and finish points")
+	}
+
+	if len(os.Args) == 6 {
+		printSolution = true
+	} else {
+		filename = os.Args[6]
 	}
 }

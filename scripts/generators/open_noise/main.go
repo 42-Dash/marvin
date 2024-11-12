@@ -1,12 +1,19 @@
 package main
 
 import (
+	utils "dashinette/scripts/generators"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"strings"
+)
+
+var (
+	rows, cols    int
+	W, A, E       int
+	printSolution bool
+	filename      string
 )
 
 func randomPop(list []rune) ([]rune, rune) {
@@ -16,7 +23,7 @@ func randomPop(list []rune) ([]rune, rune) {
 	return list, poped
 }
 
-func generateOpenMap(rows, cols int, surface []rune) string {
+func generateOpenMap(surface []rune) string {
 	var content strings.Builder = strings.Builder{}
 
 	for i := 0; i < rows; i++ {
@@ -40,14 +47,11 @@ func generateOpenMap(rows, cols int, surface []rune) string {
 	return content.String()
 }
 
-func getSurfaces(row, col int) []rune {
-	w, _ := strconv.Atoi(os.Args[3])
-	a, _ := strconv.Atoi(os.Args[4])
-	e, _ := strconv.Atoi(os.Args[5])
-	map_surf := row*col - 2
+func getSurfaces() []rune {
+	map_surf := rows*cols - 2
 
-	w_total := int(float64(w*map_surf) / float64(w+a+e))
-	a_total := int(float64(a*map_surf) / float64(w+a+e))
+	w_total := int(float64(W*map_surf) / float64(W+A+E))
+	a_total := int(float64(A*map_surf) / float64(W+A+E))
 	e_total := map_surf - (w_total + a_total)
 
 	surfaces := []rune{}
@@ -64,37 +68,35 @@ func getSurfaces(row, col int) []rune {
 }
 
 func main() {
-	row, _ := strconv.Atoi(os.Args[1])
-	col, _ := strconv.Atoi(os.Args[2])
+	surfaces := getSurfaces()
+	content := generateOpenMap(surfaces)
 
-	surfaces := getSurfaces(row, col)
-	content := generateOpenMap(row, col, surfaces)
-
-	if len(os.Args) == 6 {
+	if printSolution {
 		fmt.Print(content)
 	} else {
-		err := os.WriteFile(os.Args[6], []byte(content), 0644)
+		err := os.WriteFile(filename, []byte(content), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
+		fmt.Println("Done!")
 	}
 }
 
 func init() {
-	if len(os.Args) != 6 && len(os.Args) != 7 {
-		log.Fatal("Usage: ./map_generator [rows] [cols] [W] [A] [E] <output_file_name>")
+	if len(os.Args) != 3 && len(os.Args) != 4 {
+		log.Fatal("Usage: ./map_generator [size rows:cols] [proportion W:A:E] <output_file_name>")
 	}
 
-	for _, str := range os.Args[1:6] {
-		if _, err := strconv.Atoi(str); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	rows, _ := strconv.Atoi(os.Args[1])
-	cols, _ := strconv.Atoi(os.Args[2])
+	utils.ParseArr(os.Args[1], ":", &rows, &cols)
+	utils.ParseArr(os.Args[2], ":", &W, &A, &E)
 
 	if rows < 1 || cols < 1 || rows*cols < 2 {
 		log.Fatal("Rows and cols must be greater than 1")
+	}
+
+	if len(os.Args) == 3 {
+		printSolution = true
+	} else {
+		filename = os.Args[3]
 	}
 }
