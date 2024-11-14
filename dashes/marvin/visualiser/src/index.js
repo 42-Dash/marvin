@@ -1,6 +1,6 @@
 import P5Canvas from './web-components/P5Canvas.js';
 import P5CanvasContainer from './web-components/P5CanvasContainer.js';
-import DashLogo from './web-components/DashLogo.js';
+import DashLogo from './web-components/Dashlogo.js';
 import DashLeaderboard from './web-components/DashLeaderboard.js';
 import Game from './game.js';
 
