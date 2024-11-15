@@ -1,8 +1,5 @@
-#include <algorithm>
 #include <iostream>
 #include <fstream>
-#include <memory>
-#include <sys/_types/_size_t.h>
 #include <vector>
 #include <deque>
 #include <set>
@@ -102,7 +99,7 @@ static inline double heuristic(const t_point &start, const t_point &end) {
 
 static inline int calc_g(const t_node &current, const t_point &next, const vector<string> &map) {
 	if (map[next.row][next.col] == 'G') {
-		return 0;
+		return current.g;
 	}
 	return current.g + map[next.row][next.col] - '0';
 }
@@ -119,48 +116,8 @@ static inline char calc_path(const t_point &current, const t_point &next) {
 	}
 }
 
-void debug_final_path(const string &path, const vector<string> &map, const set<t_point> &closed) {
-	cout << "Path: " << path << endl;
-	cout << "Average: " << average << endl;
-	cout << "Map: " << "\n";
-	for (size_t i = 0; i < map.size(); i++) {
-		cout << map[i] << '\n';
-	}
-	cout << endl;
-
-	vector<string> map_copy = map;
-	for (const t_point &node : closed) {
-		map_copy[node.row][node.col] = 'X';
-	}
-
-	t_point start_point = find_char(map, 'M');
-	for (char c : path) {
-		map_copy[start_point.row][start_point.col] = c;
-		switch (c) {
-			case 'U':
-				start_point.row--;
-				break;
-			case 'D':
-				start_point.row++;
-				break;
-			case 'L':
-				start_point.col--;
-				break;
-			case 'R':
-				start_point.col++;
-				break;
-		}
-	}
-
-	cout << "Closed: " << "\n";
-	for (size_t i = 0; i < map_copy.size(); i++) {
-		cout << map_copy[i] << '\n';
-	}
-	cout << endl;
-}
-
 // A* algorithm
-string find_path(
+pair<string, int> find_path(
 	const vector<string> &map,
 	const t_point &start,
 	const t_point &end
@@ -179,7 +136,7 @@ string find_path(
 		open.pop_front();
 
 		if (current.point == end) {
-			return current.path;
+			return pair<string, int>(current.path, current.g);
 		}
 
 		for (const pair<int, int> &dir : directions) {
@@ -204,7 +161,7 @@ string find_path(
 		}
 		closed.insert(current.point);
 	}
-	return "You shall not pass!"; // another trust issue
+	return pair<string, int>("You shall not pass!", 0); // another trust issue
 }
 
 static double count_average(const vector<string> &map) {
@@ -227,14 +184,25 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	const vector<string> &input = read_file(argv[1]);
-	average = count_average(input);
 	const t_point start = find_char(input, 'M');
 	const t_point end = find_char(input, 'G');
+	int best = 2147483647;
+	average = count_average(input);
 
 	if (start.row == -1 || end.row == -1) { // trust issues
 		return 1;
 	}
 
-	cout << find_path(input, start, end) << endl;
+	// now the algo finds only one path, where heuristic is manhattan distance * average cost
+	// Astar where heuristic is 0 - Dijkstra (BFS, always finds the cheapest path)
+	// if you want to make it better, you can uncomment the following line
+	// for (;average > 0; average -= 1)
+	{
+		pair<string, int> result = find_path(input, start, end);
+		if (result.second < best) {
+			cout << result.first << endl;
+			best = result.second;
+		}
+	}
 	return 0;
 }
