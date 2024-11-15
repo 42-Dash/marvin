@@ -87,7 +87,7 @@ func parseMapIntoLevel(levels map[string][]Group) ([]Level, error) {
 	results := []Level{}
 
 	for levelPath, groups := range levels {
-		content, err := fileToLines(filepath.Join(DashFolder, levelPath))
+		content, err := fileToLines(levelPath)
 		if err != nil {
 			logger.Error.Printf("Error reading level file %s: %v", levelPath, err)
 			return nil, err

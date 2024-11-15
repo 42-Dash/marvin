@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-	"path/filepath"
 )
 
 // structure of the generated traces.json file
@@ -93,7 +92,7 @@ func DeserializeMapsOnly(file string) []string {
 
 	var maps []string
 	for _, grade := range traces.Grades {
-		maps = append(maps, filepath.Join(DashFolder, grade.StageMap))
+		maps = append(maps, grade.StageMap)
 	}
 
 	return maps
