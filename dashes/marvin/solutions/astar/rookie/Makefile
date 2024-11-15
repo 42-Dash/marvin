@@ -4,7 +4,6 @@
 
 CXX			= g++
 RM			= rm -rf
-CXXFLAGS	= -Wall -Wextra -Werror -g -std=c++17
 MAKEFLAGS	= -j$(nproc) --no-print-directory
 
 NAME		= marvin
@@ -22,11 +21,11 @@ OBJS		= $(addprefix $(OBJSDIR)/, $(SRCS:.cpp=.o))
 all		: $(NAME)
 
 $(NAME)	: ${OBJS}
-		$(CXX) $(LINKFLAGS) -o $@ $^
+		$(CXX) -o $@ $^
 
 ${OBJSDIR}/%.o	: %.cpp
 		@mkdir -p $(dir $@)
-		${CXX} ${CXXFLAGS} -c $< -o $@
+		${CXX} -c $< -o $@
 
 clean	:
 		$(RM) $(OBJSDIR)

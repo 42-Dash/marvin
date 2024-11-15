@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sys/_types/_size_t.h>
 #include <vector>
 #include <deque>
 #include <set>
@@ -122,14 +123,16 @@ pair<string, int> find_path(
 	const t_point &start,
 	const t_point &end
 ) {
-	const vector<pair<int, int> > directions({
-		{ 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 }
-	});
+	vector<pair<int, int> > directions;
 	deque<t_node>	open;
 	set<t_point>	closed;
 
 	t_node node = { start, 0, heuristic(start, end), "" };
 	add(open, node);
+	directions.push_back(make_pair(-1, 0));
+	directions.push_back(make_pair(1, 0));
+	directions.push_back(make_pair(0, 1));
+	directions.push_back(make_pair(0, -1));
 
 	while (!open.empty()) {
 		t_node current = open.front();
@@ -139,7 +142,8 @@ pair<string, int> find_path(
 			return pair<string, int>(current.path, current.g);
 		}
 
-		for (const pair<int, int> &dir : directions) {
+		for (int i = 0; i < 4; i++) {
+			const pair<int, int> &dir = directions[i];
 			t_point next = { current.point.row + dir.first, current.point.col + dir.second };
 
 			if (next.row < 0 || next.row >= (int)map.size() || next.col < 0 || next.col >= (int)map[next.row].size()) {
@@ -168,10 +172,10 @@ static double count_average(const vector<string> &map) {
 	double sum = 0;
 	double count = 0;
 
-	for (const string &line : map) {
-		for (const char &c : line) {
-			if (c >= '1' && c <= '9') {
-				sum += c - '0';
+	for (size_t i = 0; i < map.size(); i++) {
+		for (size_t j = 0; j < map[i].size(); j++) {
+			if (map[i][j] >= '0' && map[i][j] <= '9') {
+				sum += map[i][j] - '0';
 				count++;
 			}
 		}
@@ -194,7 +198,7 @@ int main(int argc, char **argv) {
 	}
 
 	// now the algo finds only one path, where heuristic is manhattan distance * average cost
-	// Astar where heuristic is 0 - Dijkstra (BFS, always finds the cheapest path)
+	// A* where heuristic is 0 - Dijkstra (always finds the cheapest path)
 	// if you want to make it better, you can uncomment the following line
 	// for (;average > 0; average -= 1)
 	{
