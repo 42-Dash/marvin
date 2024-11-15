@@ -1,11 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
-#include <string>
-#include <sys/_types/_size_t.h>
 #include <vector>
 #include <deque>
-#include <tuple>
 #include <set>
 
 using namespace std;

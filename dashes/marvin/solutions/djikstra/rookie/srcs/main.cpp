@@ -1,8 +1,8 @@
-#include <unordered_set>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <deque>
+#include <set>
 
 using namespace std;
 
@@ -11,11 +11,9 @@ typedef struct s_point {
 	int col;
 } t_point;
 
-template <> struct hash<s_point> {
-	size_t operator()(const s_point& p) const {
-		return (hash<int>()(p.row) << 1) ^ hash<int>()(p.col);
-	}
-};
+inline bool operator<(const t_point &lhs, const t_point &rhs) {
+	return (lhs.row < rhs.row || (lhs.row == rhs.row && lhs.col < rhs.col));
+}
 
 inline bool operator==(const t_point &lhs, const t_point &rhs) {
 	return (lhs.row == rhs.row && lhs.col == rhs.col);
@@ -50,7 +48,7 @@ const vector<string> read_file(const string &filename) {
 }
 
 // complexity: O(1), underlaying data structure is a hash table
-bool exists(const unordered_set<t_point> &closed, const t_point &node) {
+bool exists(const set<t_point> &closed, const t_point &node) {
 	return closed.find(node) != closed.cend();
 }
 
@@ -113,7 +111,7 @@ string find_path(
 ) {
 	vector<pair<int, int> >		directions;
 	deque<t_node>				open;
-	unordered_set<t_point>		closed;
+	set<t_point>		closed;
 
 	t_node node = { start, 0, "" };
 	add(open, node);
