@@ -101,8 +101,3 @@ go run main.go restrict
 ```sh
 go run main.go delete
 ```
-
----
-# TODO:
-## License
-This project is licensed under the MIT License.
