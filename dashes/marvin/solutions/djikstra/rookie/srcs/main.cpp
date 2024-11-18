@@ -47,12 +47,10 @@ const vector<string> read_file(const string &filename) {
 	return lines;
 }
 
-// complexity: O(1), underlaying data structure is a hash table
 bool exists(const set<t_point> &closed, const t_point &node) {
 	return closed.find(node) != closed.cend();
 }
 
-// complexity: O(log(n)), uses binary search
 void add(deque<t_node> &open, const t_node &node) {
 	if (open.empty()) {
 		open.push_back(node);
@@ -69,7 +67,6 @@ void add(deque<t_node> &open, const t_node &node) {
 	}
 }
 
-// complexity: O(m*n), where m is the number of rows and n is the number of columns
 t_point find_char(const vector<string> &map, char c) {
 	t_point point = { -1, -1 };
 

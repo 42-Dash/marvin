@@ -80,12 +80,10 @@ const vector<string> read_file(const string &filename) {
 	return lines;
 }
 
-// complexity: O(log(n)), underlaying data structure is a red-black tree
 bool exists(const set<t_point> &closed, const t_point &node) {
 	return closed.find(node) != closed.cend();
 }
 
-// complexity: O(log(n)), uses binary search
 void add(deque<t_node> &open, const t_node &node) {
 	if (open.empty()) {
 		open.push_back(node);
@@ -102,7 +100,6 @@ void add(deque<t_node> &open, const t_node &node) {
 	}
 }
 
-// complexity: O(m*n), where m is the number of rows and n is the number of columns
 t_point find_char(const vector<string> &map, char c) {
 	t_point point = { -1, -1 };
 
@@ -117,7 +114,6 @@ t_point find_char(const vector<string> &map, char c) {
 	return point;
 }
 
-// complexity: O(1), Manhattan distance * average cost
 static inline double heuristic(const t_point &start, const t_point &end) {
 	return (abs(start.row - end.row) + abs(start.col - end.col) / 2) * average;
 }
