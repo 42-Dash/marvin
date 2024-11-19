@@ -11,6 +11,7 @@ import os
 NUMBER_OF_TESTS = 3
 WEIGHTS_RANGE = np.arange(10, 2, -1)
 
+
 def plot_times(df: pd.DataFrame, axes: plt.Axes):
     '''Plots the time metrics of the dataset with smoothed curves using LOWESS
     Helper function for plot_samples
@@ -92,7 +93,6 @@ def plot_image(picture: str, axes: plt.Axes, paths: pd.Series, scores: pd.Series
             if char == 'M':
                 start_row, start_col = i, j
                 break
-
 
     colors = plt.get_cmap('viridis', len(paths))(np.linspace(0, 1, len(paths)))
     legend_elements = [patches.Patch(facecolor=color, label=f'Cost {score}') for color, score in zip(colors, scores)]
