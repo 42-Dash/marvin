@@ -5,9 +5,11 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 import argparse
+import json
 import time
 import os
 
+PATH_TO_STORAGE = 'results'
 NUMBER_OF_TESTS = 3
 WEIGHTS_RANGE = np.arange(10, 2, -1)
 
@@ -263,19 +265,43 @@ def validate_files(exec: str, map: str) -> bool:
         exit(1)
 
 
-def store_dataframe(df: pd.DataFrame, filename: str):
+def store_dataframe_md(df: pd.DataFrame, filename: str):
     '''Backup the dataframe to a MD file'''
     df = df.sort_values('weight', ascending=True)
     df = df[['weight', 'score', 'time_average', 'time_min', 'time_max', 'output']]
-    df.to_markdown(f'{os.path.basename(filename)}_results.md', index=False)
+    df.to_markdown(f'{PATH_TO_STORAGE}/{os.path.basename(filename)}_results.md', index=False)
 
+
+def store_dataframe_json(df: pd.DataFrame, filename: str):
+    '''Backup the dataframe to a JSON file'''
+    generated_filename = f'{PATH_TO_STORAGE}/{os.path.basename(filename)}_results.json'
+    content = {
+        "league": "Rookie League",
+        "levels": [
+            {
+                "lvl": os.path.basename(filename),
+                "map": open(filename, 'r').read().strip().split('\n'),
+                "groups": [
+                    {
+                        "name": f"weight {team['weight']}",
+                        "status": "valid",
+                        "score": int(team['score']),
+                        "path": team['output'],
+                    } for team in df.to_dict(orient='records')
+                ]
+            }
+        ]
+    }
+    print(json.dumps(content, indent=4), file=open(generated_filename, 'w'))
+    print(f'Generated JSON file: {generated_filename}')
 
 def main():
     '''Main function'''
     args = arguments()
     validate_files(args.exec, args.inputfile)
     df = generate_samples(args.exec, args.inputfile)
-    store_dataframe(df, args.inputfile)
+    store_dataframe_md(df, args.inputfile)
+    store_dataframe_json(df, args.inputfile)
     plot_samples(df, args.inputfile)
 
 
