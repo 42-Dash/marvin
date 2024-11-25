@@ -235,6 +235,7 @@ def arguments() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description='Plot the results of the tests')
     ap.add_argument('exec', type=str, help='Path to the executable to test')
     ap.add_argument('inputfile', type=str, help='Path to the test map')
+    ap.add_argument('name', type=str, help='Name for the result file')
     return ap.parse_args()
 
 
@@ -265,16 +266,16 @@ def validate_files(exec: str, map: str) -> bool:
         exit(1)
 
 
-def store_dataframe_md(df: pd.DataFrame, filename: str):
+def store_dataframe_md(df: pd.DataFrame, filename: str, preffix: str):
     '''Backup the dataframe to a MD file'''
     df = df.sort_values('weight', ascending=True)
     df = df[['weight', 'score', 'time_average', 'time_min', 'time_max', 'output']]
-    df.to_markdown(f'{PATH_TO_STORAGE}/{os.path.basename(filename)}_results.md', index=False)
+    df.to_markdown(f'{PATH_TO_STORAGE}/{preffix}_{os.path.basename(filename)}_results.md', index=False)
 
 
-def store_dataframe_json(df: pd.DataFrame, filename: str):
+def store_dataframe_json(df: pd.DataFrame, filename: str, preffix: str):
     '''Backup the dataframe to a JSON file'''
-    generated_filename = f'{PATH_TO_STORAGE}/{os.path.basename(filename)}_results.json'
+    generated_filename = f'{PATH_TO_STORAGE}/{preffix}_{os.path.basename(filename)}_results.json'
     content = {
         "league": "Rookie League",
         "levels": [
@@ -300,8 +301,8 @@ def main():
     args = arguments()
     validate_files(args.exec, args.inputfile)
     df = generate_samples(args.exec, args.inputfile)
-    store_dataframe_md(df, args.inputfile)
-    store_dataframe_json(df, args.inputfile)
+    store_dataframe_md(df, args.inputfile, args.name)
+    store_dataframe_json(df, args.inputfile, args.name)
     plot_samples(df, args.inputfile)
 
 
