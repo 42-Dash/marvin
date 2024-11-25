@@ -11,11 +11,13 @@ import (
 )
 
 var (
-	rows, cols    int
-	inverted      bool
-	imageFile     string
-	printSolution bool
-	filename      string
+	rows, cols             int
+	inverted               bool
+	imageFile              string
+	start_row, start_col   int
+	finish_row, finish_col int
+	printSolution          bool
+	filename               string
 )
 
 func readImage() [][]uint8 {
@@ -56,15 +58,34 @@ func generateRookieMap(surfaces [][]uint8) string {
 
 	for i := 0; i < len(surfaces); i++ {
 		for j := 0; j < len(surfaces[i]); j++ {
-			if j == 0 && i == 0 {
+			if j == start_col && i == start_row {
 				content.WriteRune('M')
-			} else if j == len(surfaces[i])-1 && i == len(surfaces)-1 {
+			} else if j == finish_col && i == finish_row {
 				content.WriteRune('G')
 			} else {
 				content.WriteByte(byte('1' + surfaces[i][j]))
 			}
 		}
 		content.WriteString("\n")
+	}
+
+	return content.String()
+}
+
+func distribution(surfaces [][]uint8) string {
+	distribution := make([]int, 9)
+	for i := 0; i < len(surfaces); i++ {
+		for j := 0; j < len(surfaces[i]); j++ {
+			distribution[surfaces[i][j]]++
+		}
+	}
+
+	var content strings.Builder = strings.Builder{}
+	for i := 0; i < len(distribution); i++ {
+		content.WriteString(fmt.Sprintf("%d", distribution[i]))
+		if i != len(distribution)-1 {
+			content.WriteString(" : ")
+		}
 	}
 
 	return content.String()
@@ -83,11 +104,12 @@ func main() {
 		}
 		fmt.Println("Done!")
 	}
+	fmt.Println(distribution(surfaces))
 }
 
 func init() {
-	if len(os.Args) != 4 && len(os.Args) != 5 {
-		log.Fatal("Usage: ./map_generator [size rows:cols] [image_file.png] [invert option t/f] <output_file_name>")
+	if len(os.Args) != 6 && len(os.Args) != 7 {
+		log.Fatal("Usage: ./map_generator [size rows:cols] [image_file.png] [invert option t/f] [begin row:col] [finish row:col] <output_file_name>")
 	}
 
 	utils.ParseArr(os.Args[1], ":", &rows, &cols)
@@ -106,10 +128,24 @@ func init() {
 	}
 
 	inverted = os.Args[3] == "t"
+	utils.ParseArr(os.Args[4], ":", &start_row, &start_col)
+	utils.ParseArr(os.Args[5], ":", &finish_row, &finish_col)
 
-	if len(os.Args) == 4 {
+	if start_row < 0 || start_col < 0 || finish_row < 0 || finish_col < 0 {
+		log.Fatal("Row and col must be greater than 0")
+	}
+
+	if start_row >= rows || start_col >= cols || finish_row >= rows || finish_col >= cols {
+		log.Fatal("Row and col must be less than rows and cols")
+	}
+
+	if start_row == finish_row && start_col == finish_col {
+		log.Fatal("Start and finish must be different")
+	}
+
+	if len(os.Args) == 6 {
 		printSolution = true
 	} else {
-		filename = os.Args[4]
+		filename = os.Args[6]
 	}
 }
