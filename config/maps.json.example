@@ -3,17 +3,17 @@
 		{
 			"path": "dashes/marvin/maps/rookieleague/amongus.txt",
 			"name": "Among us",
-			"timeout": 2
+			"timeout": 3
 		},
 		{
 			"path": "dashes/marvin/maps/rookieleague/mario.txt",
 			"name": "Mario",
-			"timeout": 2
+			"timeout": 4
 		},
 		{
 			"path": "dashes/marvin/maps/rookieleague/simpson.txt",
 			"name": "Simpson",
-			"timeout": 2
+			"timeout": 5
 		},
 		{
 			"path": "dashes/marvin/maps/rookieleague/easy20.txt",
@@ -35,17 +35,17 @@
 		{
 			"path": "dashes/marvin/maps/openleague/amongus.txt",
 			"name": "Among us",
-			"timeout": 2
+			"timeout": 4
 		},
 		{
 			"path": "dashes/marvin/maps/openleague/mario.txt",
 			"name": "Mario",
-			"timeout": 2
+			"timeout": 5
 		},
 		{
 			"path": "dashes/marvin/maps/openleague/simpson.txt",
 			"name": "Simpson",
-			"timeout": 2
+			"timeout": 4
 		},
 		{
 			"path": "dashes/marvin/maps/openleague/easy20.txt",
