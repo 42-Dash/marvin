@@ -83,6 +83,8 @@ func getSurface(rgb RGB) (byte, uint8) {
 
 func generateOpenMap(surfaces [][]RGB) string {
 	var content strings.Builder = strings.Builder{}
+	var surfDist []int = []int{0, 0, 0}
+	var nbrDist []int = []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 	for i := 0; i < len(surfaces); i++ {
 		for j := 0; j < len(surfaces[i]); j++ {
@@ -93,11 +95,23 @@ func generateOpenMap(surfaces [][]RGB) string {
 			} else {
 				surf, value := getSurface(surfaces[i][j])
 				content.WriteByte(surf)
+				{
+					if surf == 'W' {
+						surfDist[0]++
+					} else if surf == 'A' {
+						surfDist[1]++
+					} else {
+						surfDist[2]++
+					}
+					nbrDist[value]++
+				}
 				content.WriteByte(byte('1' + value))
 			}
 		}
 		content.WriteString("\n")
 	}
+	fmt.Println("Surface distribution:", surfDist)
+	fmt.Println("Number distribution:", nbrDist)
 
 	return content.String()
 }
@@ -128,7 +142,6 @@ func init() {
 	utils.ParseArr(os.Args[3], ":", &finish.Row, &finish.Col)
 	imageFile = os.Args[4]
 	inverted = os.Args[5] == "t"
-
 
 	if start.Row >= size.Row || start.Col >= size.Col || start.Row < 0 || start.Col < 0 {
 		log.Fatal("Start point is out of bounds")

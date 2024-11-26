@@ -10,10 +10,13 @@ import (
 )
 
 var (
-	rows, cols    int
-	W, A, E       int
-	printSolution bool
-	filename      string
+	rows, cols           int
+	W, A, E              int
+	range_min, range_max int
+	printSolution        bool
+	start_row, start_col int
+	final_row, final_col int
+	filename             string
 )
 
 func randomPop(list []rune) ([]rune, rune) {
@@ -25,25 +28,27 @@ func randomPop(list []rune) ([]rune, rune) {
 
 func generateOpenMap(surface []rune) string {
 	var content strings.Builder = strings.Builder{}
+	var nums []int = []int{0, 0, 0, 0, 0, 0, 0, 0,  0}
 
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
-			if j == 0 && i == 0 {
+			if j == start_col && i == start_row {
 				content.WriteString("MM")
-			} else if j == cols-1 && i == rows-1 {
+			} else if j == final_col && i == final_row {
 				content.WriteString("GG")
 			} else {
 				new_surface, poped := randomPop(surface)
 				surface = new_surface
 				content.WriteByte(byte(poped))
 
-				random := rand.Intn(9)
-				content.WriteByte(byte('1' + random))
+				random := rand.Intn(range_max-range_min+1) + range_min
+				nums[random - 1]++
+				content.WriteByte(byte('0' + random))
 			}
 		}
 		content.WriteString("\n")
 	}
-
+	fmt.Println("Distribution:", nums)
 	return content.String()
 }
 
@@ -53,6 +58,8 @@ func getSurfaces() []rune {
 	w_total := int(float64(W*map_surf) / float64(W+A+E))
 	a_total := int(float64(A*map_surf) / float64(W+A+E))
 	e_total := map_surf - (w_total + a_total)
+	fmt.Println("Square:", map_surf+2)
+	fmt.Println("Ration:", w_total, ":", a_total, ":", e_total)
 
 	surfaces := []rune{}
 	for i := 0; i < w_total; i++ {
@@ -83,20 +90,43 @@ func main() {
 }
 
 func init() {
-	if len(os.Args) != 3 && len(os.Args) != 4 {
-		log.Fatal("Usage: ./map_generator [size rows:cols] [proportion W:A:E] <output_file_name>")
+	if len(os.Args) != 6 && len(os.Args) != 7 {
+		log.Fatal("Usage: ./map_generator [size rows:cols] [proportion W:A:E] [start row:col] [goal row:col] <output_file_name>")
 	}
 
 	utils.ParseArr(os.Args[1], ":", &rows, &cols)
 	utils.ParseArr(os.Args[2], ":", &W, &A, &E)
+	utils.ParseArr(os.Args[3], ":", &range_min, &range_max)
+	utils.ParseArr(os.Args[4], ":", &start_row, &start_col)
+	utils.ParseArr(os.Args[5], ":", &final_row, &final_col)
 
 	if rows < 1 || cols < 1 || rows*cols < 2 {
 		log.Fatal("Rows and cols must be greater than 1")
 	}
 
-	if len(os.Args) == 3 {
+	if W < 0 || A < 0 || E < 0 {
+		log.Fatal("W, A and E must be greater than 0")
+	}
+
+	if range_min < 0 || range_max < 0 || range_min > range_max || range_max > 9 {
+		log.Fatal("Range min and max must be between 0 and 9")
+	}
+
+	if start_row < 0 || start_col < 0 || start_row >= rows || start_col >= cols {
+		log.Fatal("Start row and col must be within the map")
+	}
+
+	if final_row < 0 || final_col < 0 || final_row >= rows || final_col >= cols {
+		log.Fatal("Goal row and col must be within the map")
+	}
+
+	if start_row == final_row && start_col == final_col {
+		log.Fatal("Start and goal must be different")
+	}
+
+	if len(os.Args) == 6 {
 		printSolution = true
 	} else {
-		filename = os.Args[3]
+		filename = os.Args[6]
 	}
 }
