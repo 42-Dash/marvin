@@ -20,8 +20,8 @@ dashes/marvin/**/objs/
 dashes/marvin/visualiser/results.json
 dashes/marvin/traces/*
 dashes/marvin/repos/*
-scripts/stats/*/results/*.json
-scripts/stats/*/results/*.md
+scripts/marvin/maps/analyse/*/results/*.json
+scripts/marvin/maps/analyse/*/results/*.md
 open_results.json
 rookie_results.json
 app.log
