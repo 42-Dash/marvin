@@ -91,7 +91,7 @@ func main() {
 
 func init() {
 	if len(os.Args) != 6 && len(os.Args) != 7 {
-		log.Fatal("Usage: ./map_generator [size rows:cols] [proportion W:A:E] [start row:col] [goal row:col] <output_file_name>")
+		log.Fatal("Usage: ./map_generator [size rows:cols] [proportion W:A:E] [range min:max] [start row:col] [goal row:col] <output_file_name>")
 	}
 
 	utils.ParseArr(os.Args[1], ":", &rows, &cols)
