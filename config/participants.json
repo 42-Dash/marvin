@@ -1,0 +1,34 @@
+{
+    "teams": [
+		{
+			"name": "The-Avengers0",
+			"members": ["nzagorulko18"],
+			"league": "open"
+		},
+		{
+			"name": "The-Avengers1",
+            "members": ["nzagorulko18"],
+			"league": "open"
+		},
+		{
+			"name": "The-Avengers2",
+			"members": ["nzagorulko18"],
+			"league": "open"
+		},
+		{
+			"name": "The-Avengers3",
+			"members": ["nzagorulko18"],
+			"league": "rookie"
+		},
+		{
+			"name": "The-Avengers4",
+			"members": ["nzagorulko18"],
+			"league": "rookie"
+		},
+		{
+			"name": "The-Avengers5",
+			"members": ["nzagorulko18"],
+			"league": "rookie"
+		}
+    ]
+}

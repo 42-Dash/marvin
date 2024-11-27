@@ -5,8 +5,6 @@
 
 # Personal settings
 .env
-participants.json
-maps.json
 
 # Executables and object files
 bin/*
