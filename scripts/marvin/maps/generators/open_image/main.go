@@ -1,7 +1,7 @@
 package main
 
 import (
-	utils "dashinette/scripts/generators"
+	utils "dashinette/scripts/marvin/maps/generators"
 	"fmt"
 	"image/png"
 	"log"

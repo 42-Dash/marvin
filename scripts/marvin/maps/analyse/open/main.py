@@ -8,7 +8,7 @@ import os
 
 PATH_TO_STORAGE = 'results'
 NUMBER_OF_TESTS = 3
-HEURISTICS_COEFFICIENTS = 15.667
+HEURISTICS_COEFFICIENTS = 15
 
 
 def run_test(exec: str, map: str, argv: str) -> tuple[str, float]:
