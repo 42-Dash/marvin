@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <sys/_types/_size_t.h>
+#include <string>
 #include <vector>
 #include <deque>
 #include <set>
@@ -39,7 +39,7 @@ inline bool operator==(const t_node &lhs, const t_node &rhs) {
 	return (lhs.point == rhs.point);
 }
 
-double average = 0;
+double weight = 0;
 
 const vector<string> read_file(const string &filename) {
 	ifstream file(filename);
@@ -55,12 +55,10 @@ const vector<string> read_file(const string &filename) {
 	return lines;
 }
 
-// complexity: O(log(n)), underlaying data structure is a red-black tree
 bool exists(const set<t_point> &closed, const t_point &node) {
 	return closed.find(node) != closed.cend();
 }
 
-// complexity: O(log(n)), uses binary search
 void add(deque<t_node> &open, const t_node &node) {
 	if (open.empty()) {
 		open.push_back(node);
@@ -77,7 +75,6 @@ void add(deque<t_node> &open, const t_node &node) {
 	}
 }
 
-// complexity: O(m*n), where m is the number of rows and n is the number of columns
 t_point find_char(const vector<string> &map, char c) {
 	t_point point = { -1, -1 };
 
@@ -92,9 +89,8 @@ t_point find_char(const vector<string> &map, char c) {
 	return point;
 }
 
-// complexity: O(1), Manhattan distance * average cost
 static inline double heuristic(const t_point &start, const t_point &end) {
-	return (abs(start.row - end.row) + abs(start.col - end.col)) * average;
+	return (abs(start.row - end.row) + abs(start.col - end.col)) * weight;
 }
 
 
@@ -184,23 +180,28 @@ static double count_average(const vector<string> &map) {
 }
 
 int main(int argc, char **argv) {
-	if (argc != 2) {
+	if (!(argc == 2 || argc == 3)) {
 		return 1;
 	}
 	const vector<string> &input = read_file(argv[1]);
 	const t_point start = find_char(input, 'M');
 	const t_point end = find_char(input, 'G');
 	int best = 2147483647;
-	average = count_average(input);
+
+	if (argc == 2) {
+		weight = count_average(input);
+	} else {
+		weight = stod(argv[2]);
+	}
 
 	if (start.row == -1 || end.row == -1) { // trust issues
 		return 1;
 	}
 
-	// now the algo finds only one path, where heuristic is manhattan distance * average cost
+	// now the algo finds only one path, where heuristic is manhattan distance * weight cost
 	// A* where heuristic is 0 - Dijkstra (always finds the cheapest path)
 	// if you want to make it better, you can uncomment the following line
-	// for (;average > 0; average -= 1)
+	// for (;weight > 0; weight -= 1)
 	{
 		pair<string, int> result = find_path(input, start, end);
 		if (result.second < best) {

@@ -1,0 +1,231 @@
+{
+	"rookieleague": [
+		{
+			"path": "dashes/marvin/maps/final_rookie/0.txt",
+			"name": "0",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/1.txt",
+			"name": "1",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/2.txt",
+			"name": "2",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/3.txt",
+			"name": "3",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/4.txt",
+			"name": "4",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/5.txt",
+			"name": "5",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/6.txt",
+			"name": "6",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/7.txt",
+			"name": "7",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/8.txt",
+			"name": "8",
+			"timeout": 2
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/9.txt",
+			"name": "9",
+			"timeout": 2
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/10.txt",
+			"name": "10",
+			"timeout": 4
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/11.txt",
+			"name": "11",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/12.txt",
+			"name": "12",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/13.txt",
+			"name": "13",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/14.txt",
+			"name": "14",
+			"timeout": 2
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/15.txt",
+			"name": "15",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/16.txt",
+			"name": "16",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/17.txt",
+			"name": "17",
+			"timeout": 3
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/18.txt",
+			"name": "18",
+			"timeout": 3
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/19.txt",
+			"name": "19",
+			"timeout": 3
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/20.txt",
+			"name": "20",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/21.txt",
+			"name": "21",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_rookie/22.txt",
+			"name": "22",
+			"timeout": 1
+		}
+	],
+	"openleague": [
+		{
+			"path": "dashes/marvin/maps/final_open/0.txt",
+			"name": "0",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/1.txt",
+			"name": "1",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/2.txt",
+			"name": "2",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/3.txt",
+			"name": "3",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/4.txt",
+			"name": "4",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/5.txt",
+			"name": "5",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/6.txt",
+			"name": "6",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/7.txt",
+			"name": "7",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/8.txt",
+			"name": "8",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/9.txt",
+			"name": "9",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/10.txt",
+			"name": "10",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/11.txt",
+			"name": "11",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/12.txt",
+			"name": "12",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/13.txt",
+			"name": "13",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/14.txt",
+			"name": "14",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/15.txt",
+			"name": "15",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/16.txt",
+			"name": "16",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/17.txt",
+			"name": "17",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/18.txt",
+			"name": "18",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/19.txt",
+			"name": "19",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/20.txt",
+			"name": "20",
+			"timeout": 1
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/21.txt",
+			"name": "21",
+			"timeout": 1
+		}
+	]
+}

@@ -5,8 +5,6 @@
 
 # Personal settings
 .env
-participants.json
-maps.json
 
 # Executables and object files
 bin/*
@@ -22,6 +20,8 @@ dashes/marvin/**/objs/
 dashes/marvin/visualiser/results.json
 dashes/marvin/traces/*
 dashes/marvin/repos/*
-app.log
+scripts/stats/*/results/*.json
+scripts/stats/*/results/*.md
 open_results.json
 rookie_results.json
+app.log

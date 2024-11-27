@@ -1,12 +1,12 @@
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <sys/_types/_size_t.h>
 #include <vector>
 #include <deque>
-#include <tuple>
 #include <set>
+#include <tuple>
 
 using namespace std;
 
@@ -68,7 +68,7 @@ inline bool operator==(const t_node &lhs, const t_node &rhs) {
 	return (lhs.point == rhs.point);
 }
 
-double average = 0;
+double heuristic_value = 0;
 
 const vector<string> read_file(const string &filename) {
 	ifstream file(filename);
@@ -84,12 +84,10 @@ const vector<string> read_file(const string &filename) {
 	return lines;
 }
 
-// complexity: O(log(n)), underlaying data structure is a red-black tree
 bool exists(const set<t_point> &closed, const t_point &node) {
 	return closed.find(node) != closed.cend();
 }
 
-// complexity: O(log(n)), uses binary search
 void add(deque<t_node> &open, const t_node &node) {
 	if (open.empty()) {
 		open.push_back(node);
@@ -106,7 +104,6 @@ void add(deque<t_node> &open, const t_node &node) {
 	}
 }
 
-// complexity: O(m*n), where m is the number of rows and n is the number of columns
 t_point find_char(const vector<string> &map, char c) {
 	t_point point = { -1, -1 };
 
@@ -121,9 +118,8 @@ t_point find_char(const vector<string> &map, char c) {
 	return point;
 }
 
-// complexity: O(1), Manhattan distance * average cost
 static inline double heuristic(const t_point &start, const t_point &end) {
-	return (abs(start.row - end.row) + abs(start.col - end.col) / 2) * average;
+	return (abs(start.row - end.row) + abs(start.col - end.col) / 2) * heuristic_value;
 }
 
 static inline char calc_path(const t_point &current, const t_point &next) {
@@ -190,7 +186,7 @@ pair<string, int> find_path(
 	return pair<string, int>("You shall not pass!", 0); // another trust issue
 }
 
-static double count_average(const vector<string> &map, const t_coefs &coefs) {
+static double count_heuristic_value(const vector<string> &map, const t_coefs &coefs) {
 	double sum = 0;
 	double count = 0;
 
@@ -205,8 +201,37 @@ static double count_average(const vector<string> &map, const t_coefs &coefs) {
 	return (count > 0) ? sum / count : 0.;
 }
 
+static void count_character_points(const vector<string> &map, const t_point &start, const string &path, int count[3]) {
+    t_point current = start;
+    for (std::string::const_iterator it = path.begin(); it != path.end(); ++it) {
+        switch (*it) {
+            case 'U':
+                current.row--;
+                break;
+            case 'D':
+                current.row++;
+                break;
+            case 'L':
+                current.col -= 2;
+                break;
+            case 'R':
+                current.col += 2;
+                break;
+            default:
+                break;
+        }
+        if (map[current.row][current.col - 1] == WATER) {
+            count[0] += map[current.row][current.col] - '0';
+        } else if (map[current.row][current.col - 1] == EARTH) {
+            count[1] += map[current.row][current.col] - '0';
+        } else if (map[current.row][current.col - 1] == AIR) {
+            count[2] += map[current.row][current.col] - '0';
+        }
+    }
+}
+
 int main(int argc, char **argv) {
-	if (argc != 2) {
+	if (!(argc == 2 || argc == 3 || argc == 4)) {
 		return 1;
 	}
 	const vector<string> &input = read_file(argv[1]);
@@ -218,43 +243,75 @@ int main(int argc, char **argv) {
 	}
 
 
-	int best = 2147483647;
-
-	// A* is launched 21 times
-    for (int w = 0; w <= 5; w++) {
-        for (int e = 0; e <= 5; e++) {
-            if (w + e < 5) {
-                continue;
+    if (argc == 4) { // test purposes only
+        heuristic_value = stof(argv[2]);
+        t_coefs coefs = { argv[3][0] - '0', argv[3][1] - '0', argv[3][2] - '0' };
+        pair<string, int> result = find_path(input, start, end, coefs);
+        cout << coefs.water << coefs.earth << coefs.air << result.first << endl;
+    } else if (argc == 3) {// test purposes only
+        heuristic_value = stof(argv[2]);
+        t_coefs coefs = { 5, 5, 5 };
+        pair<string, int> result = find_path(input, start, end, coefs);
+        int count[3] = { 0, 0, 0 };
+        count_character_points(input, start, result.first, count);
+        int best = 2147483647;
+        string best_path = "";
+        for (int w = 0; w <= 5; w++) {
+            for (int e = 0; e <= 5; e++) {
+                if (w + e < 5) {
+                    continue;
+                }
+                coefs = (t_coefs){ w, e, 10 - w - e };
+                if (count[0] * (SURF_COST[coefs.water] - '0')
+                    + count[1] * (SURF_COST[coefs.earth] - '0')
+                    + count[2] * (SURF_COST[coefs.air] - '0') < best) {
+                    best = count[0] * (SURF_COST[coefs.water] - '0') + count[1] * (SURF_COST[coefs.earth] - '0') + count[2] * (SURF_COST[coefs.air] - '0');
+                    stringstream ss;
+                    ss << coefs.water << coefs.earth << coefs.air << result.first;
+                    best_path = ss.str();
+                }
             }
-			t_coefs coefs = { w, e, 10 - w - e };
-			average = count_average(input, coefs);
-			pair<string, int> result = find_path(input, start, end, coefs);
-			if (result.second < best) {
-				cout << coefs.water << coefs.earth << coefs.air << result.first << endl;
-				best = result.second;
-			}
-		}
-	}
+        }
+        cout << best_path << endl;
+    } else if (argc == 2) {
+        int best = 2147483647;
 
-	// now the algo finds only one path, where heuristic is manhattan distance * average cost
-	// A* where heuristic is 0 - Dijkstra (always finds the cheapest path)
-	// if you want to find all the paths, you can uncomment the following code
+        // A* is launched 21 times
+        for (int w = 0; w <= 5; w++) {
+            for (int e = 0; e <= 5; e++) {
+                if (w + e < 5) {
+                    continue;
+                }
+                t_coefs coefs = { w, e, 10 - w - e };
+                heuristic_value = count_heuristic_value(input, coefs);
+                pair<string, int> result = find_path(input, start, end, coefs);
+                if (result.second < best) {
+                    cout << coefs.water << coefs.earth << coefs.air << result.first << endl;
+                    best = result.second;
+                }
+            }
+        }
 
-	// cout << "Dijkstra" << endl;
-	// average = 0;
-    // for (int w = 0; w <= 5; w++) {
-    //     for (int e = 0; e <= 5; e++) {
-    //         if (w + e < 5) {
-    //             continue;
-    //         }
-	// 		t_coefs coefs = { w, e, 10 - w - e };
-	// 		pair<string, int> result = find_path(input, start, end, coefs);
-	// 		if (result.second < best) {
-	// 			cout << coefs.water << coefs.earth << coefs.air << result.first << endl;
-	// 			best = result.second;
-	// 		}
-	// 	}
-	// }
+        // now the algo finds only one path, where heuristic is manhattan distance * heuristic_value cost
+        // A* where heuristic is 0 - Dijkstra (always finds the cheapest path)
+        // if you want to find all the paths, you can uncomment the following code
+
+        // cout << "Dijkstra" << endl;
+        // heuristic_value = 0;
+        // for (int w = 0; w <= 5; w++) {
+        //     for (int e = 0; e <= 5; e++) {
+        //         if (w + e < 5) {
+        //             continue;
+        //         }
+        // 		t_coefs coefs = { w, e, 10 - w - e };
+        // 		pair<string, int> result = find_path(input, start, end, coefs);
+        // 		if (result.second < best) {
+        // 			cout << coefs.water << coefs.earth << coefs.air << result.first << endl;
+        // 			best = result.second;
+        // 		}
+        // 	}
+        // }
+    }
 
 	return 0;
 }

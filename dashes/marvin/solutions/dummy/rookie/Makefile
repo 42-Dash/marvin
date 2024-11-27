@@ -8,8 +8,7 @@ MAKEFLAGS	= -j$(nproc) --no-print-directory
 
 NAME		= marvin
 SRCSDIR		= srcs
-SRCS		= \
-			${SRCSDIR}/main.cpp
+SRCS		= ${SRCSDIR}/main.cpp
 
 OBJSDIR		= objs
 OBJS		= $(addprefix $(OBJSDIR)/, $(SRCS:.cpp=.o))
