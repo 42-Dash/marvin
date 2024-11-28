@@ -119,7 +119,7 @@ t_point find_char(const vector<string> &map, char c) {
 }
 
 static inline double heuristic(const t_point &start, const t_point &end) {
-	return (abs(start.row - end.row) + abs(start.col - end.col) / 2) * heuristic_value;
+	return (abs(start.row - end.row) + abs(start.col - end.col)) * heuristic_value;
 }
 
 static inline char calc_path(const t_point &current, const t_point &next) {
