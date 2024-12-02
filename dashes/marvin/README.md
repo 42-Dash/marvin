@@ -5,9 +5,9 @@
 
 ### General Instructions
 - The program must compile using the command `make` in the root directory.
-- You are not allowed to use any compile flags
+- You are not allowed to use any compile flags (yes this includes performance flags!)
 - The compiled executable should be named `marvin` and placed in the root directory during the compilation via the Makefile.
-- `C` is mandatory
+- `C` is mandatory (C++, Go, Rust for `Open League`)
 - No norm is required
 - Usage of external libraries is not allowed. Except for all libraries shipped with the compiler itself (example: #include <stdio.h>).
 - Feel free to use your libft or any other code you've written previously. 
@@ -69,11 +69,11 @@ LUU
 Here the second line `UURRDD$` will be considered as the solution 
 ### Assessment
 
-After the end of the coding time, your submitted programs will be compiled and tested against multiple unique maps.
+After the end of the coding time, your submitted programs will be compiled and tested against multiple unique maps (with potentially different timeouts).
 For each map, your program has a fixed amount of seconds to deliver its optimal solution (we will timeout your program afterwards so don't worry about ending your program). Points will be awarded based on the path with the lowest cost amongst the participants, similar to how racers collect points in Mario Kart. After all the challenges are completed, teams will be ranked based on their total points, with the team having the highest score being declared the winner.
 
-## Open League Challenges
-You can also use `C++` or `Rust` in the Open League
+## Open League Additions
+You can also use `C++`, `Go` or `Rust` in the Open League
 ### Enhanced Input
 #### Terrain Modifiers
 
