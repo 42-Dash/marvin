@@ -57,6 +57,7 @@ func pushSubjects(participants parser.Participants) {
 			[]string{SUBJECT_PATH},
 			"add subject",
 			"main",
+			false,
 		)
 		if err != nil {
 			logger.Error.Printf("Error pushing subjects for team %s: %v", team.Name, err)
@@ -91,6 +92,7 @@ func pushTraces(participants parser.Participants) {
 			),
 			"Upload traces",
 			"traces",
+			true,
 		)
 		if err != nil {
 			logger.Error.Printf("Error pushing traces for team %s: %v", team.Name, err)

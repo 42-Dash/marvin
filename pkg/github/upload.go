@@ -31,9 +31,10 @@ func addFile(repo, filename string) error {
 // - filename: the file to upload (relative path form the repository root)
 // - commit: the commit message
 // - branch: the branch to push to
+// - cleanBranch: if true, the branch will be cleaned before adding the file
 //
 // Returns an error if the file does not exist, or if the commands fail.
-func UploadFileToRoot(repo string, files []string, commit string, branch string) error {
+func UploadFileToRoot(repo string, files []string, commit string, branch string, cleanBranch bool) error {
 	if _, err := os.Stat(repo); os.IsNotExist(err) {
 		logger.Warn.Printf("Repository %s does not exist, cloning", repo)
 		if err := CloneRepo(filepath.Base(repo), repo); err != nil {
@@ -41,8 +42,14 @@ func UploadFileToRoot(repo string, files []string, commit string, branch string)
 		}
 	}
 
-	if err := SwitchBranch(repo, branch); err != nil {
-		return fmt.Errorf("failed to checkout branch: %w", err)
+	if cleanBranch {
+		if err := SwitchEmptyBranch(repo, branch); err != nil {
+			return fmt.Errorf("failed to checkout empty branch: %w", err)
+		}
+	} else {
+		if err := SwitchBranch(repo, branch); err != nil {
+			return fmt.Errorf("failed to checkout branch: %w", err)
+		}
 	}
 
 	if len(files) == 0 {
