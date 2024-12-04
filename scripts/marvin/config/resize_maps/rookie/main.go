@@ -10,6 +10,7 @@ import (
 
 var (
 	scenario     int
+	noiseMaps    int    = 6
 	resultFolder string = "../../../../../dashes/marvin/maps/final_rookie"
 	imageFolder  string = "../../../../../dashes/marvin/maps/final_rookie_images"
 )
@@ -74,7 +75,7 @@ func selectScenario() [][]string {
 		scripts = append(scripts, append(size, param[2:]...))
 	}
 	for i := range scripts {
-		if i < 6 {
+		if i < noiseMaps {
 			scripts[i] = append(noiseGenerationScript, scripts[i]...)
 		} else {
 			scripts[i] = append(imageGenerationScript, scripts[i]...)
