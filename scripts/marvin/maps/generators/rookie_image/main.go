@@ -131,8 +131,24 @@ func init() {
 	utils.ParseArr(os.Args[4], ":", &start_row, &start_col)
 	utils.ParseArr(os.Args[5], ":", &finish_row, &finish_col)
 
+	if start_row < 0 {
+		start_row = rows + start_row
+	}
+
+	if start_col < 0 {
+		start_col = cols + start_col
+	}
+
+	if finish_row < 0 {
+		finish_row = rows + finish_row
+	}
+
+	if finish_col < 0 {
+		finish_col = cols + finish_col
+	}
+
 	if start_row < 0 || start_col < 0 || finish_row < 0 || finish_col < 0 {
-		log.Fatal("Row and col must be greater than 0")
+		log.Fatal("Out of bounds")
 	}
 
 	if start_row >= rows || start_col >= cols || finish_row >= rows || finish_col >= cols {

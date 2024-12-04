@@ -226,6 +226,11 @@
 			"path": "dashes/marvin/maps/final_open/21.txt",
 			"name": "21",
 			"timeout": 5
+		},
+		{
+			"path": "dashes/marvin/maps/final_open/22.txt",
+			"name": "21",
+			"timeout": 5
 		}
 	]
 }
