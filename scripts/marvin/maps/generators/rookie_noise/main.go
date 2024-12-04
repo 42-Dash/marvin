@@ -70,6 +70,22 @@ func init() {
 		log.Fatal("Rows and cols must be greater than 1")
 	}
 
+	if start_row < 0 {
+		start_row = rows + start_row
+	}
+
+	if start_col < 0 {
+		start_col = cols + start_col
+	}
+
+	if goal_row < 0 {
+		goal_row = rows + goal_row
+	}
+
+	if goal_col < 0 {
+		goal_col = cols + goal_col
+	}
+
 	if start_row < 0 || start_row >= rows || start_col < 0 || start_col >= cols {
 		log.Fatal("Position of Marvin is out of bounds")
 	}

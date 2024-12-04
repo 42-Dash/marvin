@@ -28,7 +28,7 @@ func randomPop(list []rune) ([]rune, rune) {
 
 func generateOpenMap(surface []rune) string {
 	var content strings.Builder = strings.Builder{}
-	var nums []int = []int{0, 0, 0, 0, 0, 0, 0, 0,  0}
+	var nums []int = []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
@@ -42,7 +42,7 @@ func generateOpenMap(surface []rune) string {
 				content.WriteByte(byte(poped))
 
 				random := rand.Intn(range_max-range_min+1) + range_min
-				nums[random - 1]++
+				nums[random-1]++
 				content.WriteByte(byte('0' + random))
 			}
 		}
@@ -110,6 +110,22 @@ func init() {
 
 	if range_min < 0 || range_max < 0 || range_min > range_max || range_max > 9 {
 		log.Fatal("Range min and max must be between 0 and 9")
+	}
+
+	if start_row < 0 {
+		start_row = rows + start_row
+	}
+
+	if start_col < 0 {
+		start_col = cols + start_col
+	}
+
+	if final_row < 0 {
+		final_row = rows + final_row
+	}
+
+	if final_col < 0 {
+		final_col = cols + final_col
 	}
 
 	if start_row < 0 || start_col < 0 || start_row >= rows || start_col >= cols {

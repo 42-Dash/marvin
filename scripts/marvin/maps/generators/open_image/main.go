@@ -143,12 +143,28 @@ func init() {
 	imageFile = os.Args[4]
 	inverted = os.Args[5] == "t"
 
-	if start.Row >= size.Row || start.Col >= size.Col || start.Row < 0 || start.Col < 0 {
-		log.Fatal("Start point is out of bounds")
+	if start.Row < 0 {
+		start.Row = size.Row + start.Row
 	}
 
-	if finish.Row >= size.Row || finish.Col >= size.Col || finish.Row < 0 || finish.Col < 0 {
-		log.Fatal("Finish point is out of bounds")
+	if start.Col < 0 {
+		start.Col = size.Col + start.Col
+	}
+
+	if finish.Row < 0 {
+		finish.Row = size.Row + finish.Row
+	}
+
+	if finish.Col < 0 {
+		finish.Col = size.Col + finish.Col
+	}
+
+	if start.Row < 0 || start.Col < 0 || finish.Row < 0 || finish.Col < 0 {
+		log.Fatal("Out of bounds")
+	}
+
+	if start.Row >= size.Row || start.Col >= size.Col || finish.Row >= size.Row || finish.Col >= size.Col {
+		log.Fatal("Out of bounds")
 	}
 
 	if start.Col == finish.Col && start.Row == finish.Row {
