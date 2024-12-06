@@ -2,51 +2,39 @@ package main
 
 import (
 	"bytes"
+	"dashinette/internals/traces"
+	"dashinette/pkg/parser"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
-	"slices"
+	"path"
 )
 
-// structure of the required results.json file
-type Group struct {
-	Name   string `json:"name"`
-	Status string `json:"status"`
-	Score  int    `json:"score"`
-	Path   string `json:"path"`
-}
+var (
+	resultsFile string
+	mapsFile    string
+	league      string
+)
 
-type Level struct {
-	Name   string   `json:"lvl"`
-	Map    []string `json:"map"`
-	Groups []Group  `json:"groups"`
-}
+const (
+	rookieLeague = "rookieleague"
+	openLeague   = "openleague"
+)
 
-type Results struct {
-	League string  `json:"league"`
-	Levels []Level `json:"levels"`
+type Element struct {
+	Name  string
+	Index int
 }
 
 func fileExists(filename string) bool {
 	if _, err := os.Stat(filename); err == nil {
 		return true
 	}
-
 	return false
 }
 
-func validateArguments() {
-	if len(os.Args) != 2 {
-		log.Fatal("usage: ./main <results file>")
-	}
-	if !fileExists(os.Args[1]) {
-		log.Fatalf("error: file %s does not exist", os.Args[1])
-	}
-}
-
-func parseFile(filename string) Results {
-	var content Results
+func parseFile(filename string) traces.Results {
+	var content traces.Results
 
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -61,46 +49,18 @@ func parseFile(filename string) Results {
 	return content
 }
 
-func printOrder(heading string, results Results) {
-	fmt.Println(heading)
-	for i, level := range results.Levels {
-		fmt.Printf("Index %d, Level %s\n", i, level.Name)
-	}
-	fmt.Println()
-}
+func sortResults(results *traces.Results, order map[string]Element) {
+	var sortedLevels []traces.Level = make([]traces.Level, len(results.Levels))
 
-func promptOrder(levels []Level) []int {
-	var order []int
-	var index int
-
-	fmt.Println("Enter new order of levels:")
-	for i, level := range levels {
-		fmt.Printf("Index %d, Level %s\n", i, level.Name)
-		fmt.Scan(&index)
-
-		if index < 0 || index >= len(levels) {
-			log.Fatalf("Invalid index %d", index)
-		}
-		if slices.Contains(order, index) {
-			log.Fatalf("Index %d already used", index)
-		}
-
-		order = append(order, index)
-	}
-	return order
-}
-
-func sortResults(results *Results, order []int) {
-	var sortedLevels []Level = make([]Level, len(results.Levels))
-
-	for i, index := range order {
-		sortedLevels[index] = results.Levels[i]
+	for _, level := range results.Levels {
+		sortedLevels[order[level.Name].Index] = level
+		sortedLevels[order[level.Name].Index].Name = order[level.Name].Name
 	}
 
 	results.Levels = sortedLevels
 }
 
-func serializeResults(results Results, filename string) {
+func serializeResults(results traces.Results, filename string) {
 	original, err := json.Marshal(results)
 	if err != nil {
 		log.Fatalf("Error serializing results: %v", err)
@@ -115,16 +75,60 @@ func serializeResults(results Results, filename string) {
 	}
 }
 
+func getOrder(file string) map[string]Element {
+	var content parser.MapsJSON
+
+	data, err := os.ReadFile(file)
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	err = json.Unmarshal(data, &content)
+	if err != nil {
+		log.Fatalf("Error parsing file: %v", err)
+	}
+
+	var maps = []parser.Map{}
+	if league == rookieLeague {
+		maps = content.RookieMaps
+	} else {
+		maps = content.OpenMaps
+	}
+
+	var order map[string]Element = make(map[string]Element)
+	for idx, mapData := range maps {
+		order[path.Base(mapData.Path)] = Element{mapData.Name, idx}
+	}
+
+	return order
+}
+
 func main() {
-	validateArguments()
-
-	var results Results = parseFile(os.Args[1])
-
-	printOrder("Current order of levels:", results)
-	var order []int = promptOrder(results.Levels)
+	var results traces.Results = parseFile(resultsFile)
+	var order map[string]Element = getOrder(mapsFile)
 
 	sortResults(&results, order)
-	printOrder("\nOrder of levels after sorting:", results)
 
-	serializeResults(results, os.Args[1])
+	serializeResults(results, resultsFile)
+}
+
+func init() {
+	if len(os.Args) != 4 {
+		log.Fatal("usage: ./main <results file> <maps file with actual order> [league]")
+	}
+
+	resultsFile = os.Args[1]
+	if !fileExists(resultsFile) {
+		log.Fatalf("error: results file %s does not exist", resultsFile)
+	}
+
+	mapsFile = os.Args[2]
+	if !fileExists(mapsFile) {
+		log.Fatalf("error: maps.json file %s does not exist", mapsFile)
+	}
+
+	league = os.Args[3]
+	if league != rookieLeague && league != openLeague {
+		log.Fatalf("error: league must be either rookieleague or openleague")
+	}
 }
