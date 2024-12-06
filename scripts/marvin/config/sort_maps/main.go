@@ -5,6 +5,7 @@ import (
 	"dashinette/internals/traces"
 	"dashinette/pkg/parser"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -106,13 +107,13 @@ func getOrder(file string) map[string]Element {
 func main() {
 	var results traces.Results = parseFile(resultsFile)
 	var order map[string]Element = getOrder(mapsFile)
-
 	sortResults(&results, order)
-
 	serializeResults(results, resultsFile)
 }
 
 func init() {
+	fmt.Println("Please make sure you have a backup of the original file.")
+	fmt.Scanln()
 	if len(os.Args) != 4 {
 		log.Fatal("usage: ./main <results file> <maps file with actual order> [league]")
 	}
