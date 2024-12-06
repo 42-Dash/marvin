@@ -6,7 +6,7 @@ import (
 )
 
 // Checks if a branch exists in the repository.
-func isBranchExist(repoPath string, branch string) bool { // todo
+func isBranchExist(repoPath string, branch string) bool {
 	err := executeCommand(
 		repoPath,
 		"git",
