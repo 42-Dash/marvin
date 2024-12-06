@@ -24,6 +24,14 @@ func initialCommitUrl(repo_name string) string {
 	)
 }
 
+func createRepoFromTemplateUrl(template string) string {
+	return fmt.Sprintf(
+		"https://api.github.com/repos/%s/%s/generate",
+		os.Getenv("GITHUB_ORGANISATION"),
+		template,
+	)
+}
+
 // Returns an error message based on the status code.
 func createRepoErrorMessage(statusCode int) string {
 	switch statusCode {
@@ -62,14 +70,14 @@ func initialCommit(repo_name string) error {
 //
 // Parameters:
 //   - name: The name of the repository.
-//   - is_private: A boolean indicating whether the repository should be private.
+//   - isPrivate: A boolean indicating whether the repository should be private.
 //
 // Returns:
 //   - error: An error object if an error occurred, otherwise nil.
-func CreateRepo(name string, is_private bool) error {
+func CreateRepo(name string, isPrivate bool) error {
 	payload, err := json.Marshal(map[string]interface{}{
 		"name":    name,
-		"private": is_private,
+		"private": isPrivate,
 	})
 	if err != nil {
 		return err
@@ -92,6 +100,35 @@ func CreateRepo(name string, is_private bool) error {
 	err = initialCommit(name)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func CreateRepoFromTemplate(name string, template string, isPrivate bool) error {
+	payload, err := json.Marshal(map[string]interface{}{
+		"owner":                os.Getenv("GITHUB_ORGANISATION"),
+		"name":                 name,
+		"description":          "Template repository for the Dash project",
+		"include_all_branches": false,
+		"private":              isPrivate,
+	})
+	if err != nil {
+		return err
+	}
+
+	var url string = createRepoFromTemplateUrl(template)
+	res, err := sendRequest(http.MethodPost, url, payload)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusCreated {
+		return fmt.Errorf("cannot create repository %s: %s",
+			name,
+			createRepoErrorMessage(res.StatusCode),
+		)
 	}
 
 	return nil

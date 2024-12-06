@@ -9,10 +9,11 @@ import (
 )
 
 const SUBJECT_PATH = "dashes/marvin/README.md"
+const TEMPLATE_REPO = "template-marvin"
 
 func createRepos(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.CreateRepo(team.Name, true)
+		err := github.CreateRepoFromTemplate(team.Name, TEMPLATE_REPO, true)
 		if err != nil {
 			logger.Error.Printf("Error creating repo for team %s: %v", team.Name, err)
 		} else {
