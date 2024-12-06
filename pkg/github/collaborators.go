@@ -51,8 +51,6 @@ func SetCollaborators(
 		url := setCollaboratorsURL(repo, username)
 		req, err := sendRequest(http.MethodPut, url, payload)
 		if err != nil {
-			// this structure is repeated in the other functions as well
-			// TODO: think about how you can refactor this
 			if len(errs) == 0 {
 				errs = err.Error()
 			} else {
