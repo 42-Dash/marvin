@@ -11,8 +11,8 @@ import (
 var (
 	scenario     int
 	noiseMaps    int    = 8
-	resultFolder string = "../../../../../dashes/marvin/maps/final_open"
-	imageFolder  string = "../../../../../dashes/marvin/maps/final_open_images"
+	resultFolder string = "../../../../../dashes/marvin/maps/openleague"
+	imageFolder  string = "../../../../../dashes/marvin/maps/images"
 )
 
 var (
@@ -57,11 +57,11 @@ func executeCommand(dir, command string, args ...string) error {
 }
 
 func imagePath(i int) string {
-	return fmt.Sprintf("%v/%d.png", imageFolder, i)
+	return fmt.Sprintf("%v/openleague_level_%d.png", imageFolder, i)
 }
 
 func getDestination(i int) string {
-	return fmt.Sprintf("%s/%d.txt", resultFolder, i)
+	return fmt.Sprintf("%s/level_%d.txt", resultFolder, i)
 }
 
 func selectScenario() [][]string {
