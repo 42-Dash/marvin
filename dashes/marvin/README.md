@@ -10,7 +10,7 @@
 - `C` is mandatory (C++, Go, Rust for `Open League`)
 - No norm is required
 - Usage of external libraries is not allowed. Except for all libraries shipped with the compiler itself (example: #include <stdio.h>).
-- Feel free to use your libft or any other code you've written previously. 
+- Feel free to use your libft or any other code you've written previously.
 - Memory leaks are not a concern.
 - Be prepared to explain your logic during presentation to ensure originality and authenticity.
 - No multithreading
@@ -30,7 +30,7 @@ The traces will be pushed to your repository. (inside the branch `traces` so don
   - 'M': starting point (only one per map).
   - 'G': goal (only one per map).
   - '1' - '9': cost tiles.
-- The map given will always be valid 
+- The map given will always be valid
 - The map file is passed as a command-line argument: `./marvin planet.txt`.
 - Always expect just one command-line argument (argc == 2).
 - The file will always be present and will have read rights.
@@ -66,7 +66,7 @@ RR$
 UURRDD$
 LUU
 ```
-Here the second line `UURRDD$` will be considered as the solution 
+Here the second line `UURRDD$` will be considered as the solution
 ### Assessment
 
 After the end of the coding time, your submitted programs will be compiled and tested against multiple unique maps (with potentially different timeouts).
@@ -96,14 +96,14 @@ Craft a character resembling the Fallout series, distributing 10 skill points am
 - Earth
 
 The maximum allocation for any element is 5 points. Your character's element affinity **affects tile costs**:
-- 0 points => 4
-- 1 point => 3
-- 2 points => 2.5
-- 3 points => 2
-- 4 points => 1.5
-- 5 points => 1
+- 0 points => 8
+- 1 point => 6
+- 2 points => 5
+- 3 points => 4
+- 4 points => 3
+- 5 points => 2
 
-For instance, with 3 Water points, moving onto a `W4` tile costs 2 * 4 = 8.
+For instance, with 2 Water points, moving onto a `W4` tile costs 5 * 4 = 20.
 ### Output Additions
 
 Begin with your character's configuration, followed by the movement sequence.
@@ -117,8 +117,8 @@ Begin with your character's configuration, followed by the movement sequence.
 Here, `055` displays the allocated points for Water, Air, and Earth, in this order, respectively.
 
 ```
-With 055 the total cost would be 9 - 3 * 1 (A3) + 6 * 1 (E6) 
-With 505 it would be 18 - 3 * 4 (A3) + 6 * 1 (E6) 
+With 055 the total cost would be 3 * 2 (A3) + 6 * 2 (E6) = 18
+With 505 it would be 3 * 8 (A3) + 6 * 2 (E6) = 36
 ```
 
 Keep in mind that your character can significantly affect the cost of a given path, so choose wisely!
