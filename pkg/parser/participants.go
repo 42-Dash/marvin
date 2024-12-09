@@ -95,9 +95,9 @@ func LoadParticipantsJSON() (Participants, error) {
 		return Participants{}, err
 	}
 
-	// if err := participants.validateTeams(); err != nil {
-	// 	return Participants{}, err
-	// }
+	if err := participants.validateTeams(); err != nil {
+		return Participants{}, err
+	}
 
 	return participants, nil
 }
