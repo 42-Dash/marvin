@@ -2,7 +2,7 @@ package main
 
 import (
 	"dashinette/internals/cli"
-	"dashinette/pkg/containerization"
+	"dashinette/pkg/constants/marvin"
 	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"log"
@@ -11,8 +11,6 @@ import (
 
 	"github.com/joho/godotenv"
 )
-
-const DOTENV_PATH = "config/.env"
 
 // Main function to start the CLI.
 // It prompts the user to enter the path to the participants file.
@@ -31,23 +29,18 @@ func main() {
 
 // Checks if all required environment variables are set.
 func init() {
-	err := godotenv.Load(DOTENV_PATH)
+	err := godotenv.Load(marvin.DOTENV_PATH)
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	var variables []string = []string{
-		"GITHUB_ACCESS",
-		"GITHUB_ORGANISATION",
-	}
-
-	for _, env := range variables {
+	for _, env := range marvin.REQUIRED_ENVS {
 		if os.Getenv(env) == "" {
 			log.Fatalf("Error: %s not found in .env", env)
 		}
 	}
 
-	var imageName string = containerization.DockerImageName
+	var imageName string = marvin.DOCKER_IMAGE_NAME
 
 	log.Printf("Building docker image %s...", imageName)
 	buildCmd := exec.Command("docker", "build", "-t", imageName, ".")

@@ -1,11 +1,10 @@
 package parser
 
 import (
+	"dashinette/pkg/constants/marvin"
 	"encoding/json"
 	"os"
 )
-
-const MAPS_FILE string = "config/maps.json"
 
 type Map struct {
 	Path    string `json:"path"`
@@ -49,7 +48,7 @@ func DeserializeTesterConfig(data []byte) (TesterConfig, error) {
 	}
 
 	var maps MapsJSON
-	file, err := os.Open(MAPS_FILE)
+	file, err := os.Open(marvin.MAPS_CONFIG_FILE)
 	if err != nil {
 		return TesterConfig{}, err
 	}

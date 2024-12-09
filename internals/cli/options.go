@@ -6,14 +6,12 @@ import (
 	"dashinette/pkg/github"
 	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
+	"dashinette/pkg/constants/marvin"
 )
-
-const SUBJECT_PATH = "dashes/marvin/README.md"
-const TEMPLATE_REPO = "template-marvin"
 
 func createRepos(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.CreateRepoFromTemplate(team.Name, TEMPLATE_REPO, true)
+		err := github.CreateRepoFromTemplate(team.Name, marvin.TEMPLATE_REPO, true)
 		if err != nil {
 			logger.Error.Printf("Error creating repo for team %s: %v", team.Name, err)
 		} else {
@@ -55,7 +53,7 @@ func pushSubjects(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.UploadFileToRoot(
 			parser.GetRepoPath(team.Name),
-			[]string{SUBJECT_PATH},
+			[]string{marvin.SUBJECT_PATH},
 			"add subject",
 			"main",
 			false,

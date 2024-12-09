@@ -5,14 +5,13 @@ import (
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
 	"dashinette/internals/traces"
+	"dashinette/pkg/constants/marvin"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
-
-const EXECUTABLE_NAME = "marvin"
 
 // Returns true if the file exists.
 func fileExists(path string) bool {
@@ -22,8 +21,8 @@ func fileExists(path string) bool {
 
 // Compiles the project and
 func compileProject(config parser.TesterConfig) error {
-	if fileExists(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME)) {
-		os.Remove(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME))
+	if fileExists(filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME)) {
+		os.Remove(filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME))
 	}
 
 	if !fileExists(config.Args.RepoPath + "/Makefile") {
@@ -74,7 +73,7 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 
 	for _, repo := range config.Maps {
 		path, res, err := gradingFunction(
-			filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME),
+			filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME),
 			repo.Path,
 			repo.Timeout,
 		)

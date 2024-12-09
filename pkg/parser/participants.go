@@ -1,13 +1,12 @@
 package parser
 
 import (
+	"dashinette/pkg/constants/marvin"
 	"encoding/json"
 	"fmt"
 	"os"
 	"regexp"
 )
-
-const ParticipantsFile = "config/participants.json"
 
 // Team represents a team of participants.
 type Team struct {
@@ -85,7 +84,7 @@ func (p *Participants) validateTeams() error {
 //   - error: An error object if an error occurred, otherwise nil.
 func LoadParticipantsJSON() (Participants, error) {
 	participants := Participants{}
-	file, err := os.Open(ParticipantsFile)
+	file, err := os.Open(marvin.PARTICIPANTS_CONFIG_FILE)
 	if err != nil {
 		return Participants{}, err
 	}

@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
+	"dashinette/pkg/constants/marvin"
 	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"fmt"
@@ -14,10 +15,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 )
-
-// dockerImageName is the name of the docker image used to run the tester.
-// doesnt really matter for the dashinette project
-const DockerImageName = "dashinette-tester"
 
 // creates a new docker client.
 func setupDockerClient() (cli *client.Client, err error) {
@@ -32,12 +29,12 @@ func launchContainer(ctx context.Context, client *client.Client, team parser.Tea
 	dir, _ := os.Getwd()
 	config := parser.SerializeTesterConfig(team, repo, tracesfile)
 	containerConfig := &container.Config{
-		Image:      DockerImageName,
+		Image:      marvin.DOCKER_IMAGE_NAME,
 		Cmd:        []string{"sh", "-c", fmt.Sprintf("./tester '%v'", config)},
 		WorkingDir: "/app",
 	}
 	hostConfig := &container.HostConfig{
-		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, parser.DashFolder)},
+		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, marvin.DASH_FOLDER)},
 		AutoRemove: false,
 	}
 
