@@ -2,8 +2,8 @@ package main
 
 import (
 	"dashinette/internals/cli"
-	"dashinette/internals/containerization"
-	"dashinette/internals/logger"
+	"dashinette/pkg/containerization"
+	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"log"
 	"os"
