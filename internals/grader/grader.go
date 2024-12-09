@@ -56,12 +56,12 @@ func selectGradingFunction(league string) func(string, string, int) (string, int
 }
 
 func MultistageGraderWithTraces(config parser.TesterConfig) error {
-	_, err := os.Stat(traces.GetTracesPath(config.Args.TeamName))
+	_, err := os.Stat(parser.GetTracesPath(config.Args.TeamName))
 	if err == nil {
-		os.Remove(traces.GetTracesPath(config.Args.TeamName))
+		os.Remove(parser.GetTracesPath(config.Args.TeamName))
 	}
 	tr := traces.NewLogger()
-	defer tr.StoreInFile(traces.GetTracesPathContainerized(config.Args.TeamName))
+	defer tr.StoreInFile(parser.GetTracesPathContainerized(config.Args.TeamName))
 
 	if err := compileProject(config); err != nil {
 		tr.AddCompilation(err.Error())
@@ -73,13 +73,11 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 	var gradingFunction = selectGradingFunction(config.Args.League)
 
 	for _, repo := range config.Maps {
-		fmt.Println("Repo: ", repo)
 		path, res, err := gradingFunction(
 			filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME),
 			repo.Path,
 			repo.Timeout,
 		)
-		fmt.Println("Path: ", path)
 		if err == nil {
 			tr.AddStage(repo.Path, res, "OK", path)
 		} else {

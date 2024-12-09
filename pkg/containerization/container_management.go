@@ -4,8 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
-	"dashinette/internals/logger"
-	"dashinette/internals/traces"
+	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
@@ -38,7 +37,7 @@ func launchContainer(ctx context.Context, client *client.Client, team parser.Tea
 		WorkingDir: "/app",
 	}
 	hostConfig := &container.HostConfig{
-		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, traces.DashFolder)},
+		Binds:      []string{fmt.Sprintf("%s/%s/traces:/app/traces", dir, parser.DashFolder)},
 		AutoRemove: false,
 	}
 
@@ -129,15 +128,12 @@ func runContainerized(team parser.Team, repo string, tracesfile string) error {
 	if err != nil {
 		return err
 	}
+
 	if exitCode != 0 {
 		return fmt.Errorf("container exited with code %d", exitCode)
 	}
 
-	if err := client.ContainerRemove(ctx, containerID, container.RemoveOptions{}); err != nil {
-		return err
-	}
-
-	return nil
+	return client.ContainerRemove(ctx, containerID, container.RemoveOptions{})
 }
 
 // grades the assignment for the given team.
@@ -191,7 +187,7 @@ func copyToContainer(ctx context.Context, cli *client.Client, containerID, srcPa
 			}
 
 			header := &tar.Header{
-				Name:    traces.GetRepoPathContainerized(file),
+				Name:    parser.GetRepoPathContainerized(file),
 				Mode:    int64(fi.Mode().Perm()),
 				Size:    fi.Size(),
 				ModTime: fi.ModTime(),

@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"dashinette/internals/logger"
+	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"fmt"
 	"log"
