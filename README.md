@@ -72,34 +72,19 @@ Defines the teams participating in the competition.
 {
     "teams": [
         {
-            "name": "The-Avengers0",
-            "members": ["IronMan"],
-            "league": "open"
+            "name": "The-Avengers",
+            "members": ["IronMan", "Thor777"],
+			"league": "open"
         },
         {
-            "name": "The-Avengers1",
-            "members": ["IronMan"],
-            "league": "open"
+            "name": "Pirates-of-the-Caribbean",
+            "members": ["jack-sparrow", "wturner"],
+			"league": "open"
         },
         {
-            "name": "The-Avengers2",
-            "members": ["IronMan"],
-            "league": "open"
-        },
-        {
-            "name": "The-Avengers3",
-            "members": ["IronMan"],
-            "league": "rookie"
-        },
-        {
-            "name": "The-Avengers4",
-            "members": ["IronMan"],
-            "league": "rookie"
-        },
-        {
-            "name": "The-Avengers5",
-            "members": ["IronMan"],
-            "league": "rookie"
+            "name": "The-Justice-League",
+            "members": ["BatmanIsHere", "SuPeRmAn"],
+			"league": "rookie"
         }
     ]
 }
@@ -116,16 +101,16 @@ Specifies the maps used for generating traces for tests and final submittions.
     "rookieleague": [
         {
             "path": "dashes/marvin/maps/rookieleague/amongus.txt",
-            "name": "Among us",
-            "timeout": 3
+            "name": "Impostor",
+            "timeout": 2
         },
         ...
     ],
     "openleague": [
         {
-            "path": "dashes/marvin/maps/openleague/amongus.txt",
-            "name": "Among us",
-            "timeout": 4
+            "path": "dashes/marvin/maps/openleague/sipmson.txt",
+            "name": "You know him",
+            "timeout": 3
         },
         ...
     ]
@@ -139,7 +124,7 @@ Specifies the maps used for generating traces for tests and final submittions.
 ## Usage
 ### CLI Menu
 Launch the CLI with:
-```go
+```bash
 go run main.go
 ```
 
@@ -163,7 +148,7 @@ go run main.go
 3. Analyze Submissions and give feedback
     - Select "Clone and Analyze Submissions to Generate Traces."
     - Select "Parse and Upload Traces to 'traces' Branch."
-4. Upload Traces:
+4. Analyze Submissions and prepare results for visualization:
     - Select "Clone and Analyze Submissions to Generate Traces."
     - Select "Parse Logs and Generate results.json."
 
@@ -185,26 +170,18 @@ go run scripts/marvin/visualiser/start/main.go generated_results.json
 ├── Taskfile.yml
 ├── app.log
 ├── cmd
-│   ├── tester
-│   │   └── main.go
-│   └── tests
-│       ├── openleague
-│       │   └── ...
-│       └── rookieleague
-│           └── ...
+│   └── marvin
+│       ├── tester
+│       ├── tests
+│       └── marvin
 ├── config
 │   ├── .env
 │   ├── maps.json
-│   ├── maps.json.example
-│   ├── participants.json
-│   └── participants.json.example
+│   └── participants.json
 ├── dashes
 │   └── marvin
 │       ├── README.md
 │       ├── maps
-│       │   ├── images
-│       │   ├── openleague
-│       │   └── rookieleague
 │       ├── repos
 │       ├── solutions
 │       ├── traces
@@ -215,7 +192,6 @@ go run scripts/marvin/visualiser/start/main.go generated_results.json
 │           ├── libraries
 │           ├── results.json
 │           └── src
-│
 ├── go.mod
 ├── go.sum
 ├── internals
@@ -225,16 +201,11 @@ go run scripts/marvin/visualiser/start/main.go generated_results.json
 ├── main.go
 ├── pkg
 │   ├── constants
-│   │   └── marvin
 │   ├── containerization
 │   ├── github
 │   ├── logger
 │   └── parser
 └── scripts
-    ├── general
-    │   └── delete_repos
-    └── marvin
-        └── ...
 ```
 
 ## Go Version & Dependencies
@@ -254,3 +225,43 @@ require (
 ```
 
 ## Taskfile
+
+The project utilizes a [`Taskfile.yml`](Taskfile.yml) to automate various development tasks. [Task](https://taskfile.dev/) is a simple task runner that helps streamline your workflow.
+
+### Prerequisites
+
+- **Task:** Ensure Task is installed on your system. Follow the [Task installation guide](https://taskfile.dev/installation/) to set it up.
+
+### Available Tasks
+
+- **marvin:** Build the marvin project.
+- **marvin-tester:** Build the marvin project tester (for development).
+- **marvin-docker:** Rebuild the Docker image for the marvin project.
+- **clean:** Clean up the repository by removing build artifacts and logs.
+- **delete-repos:** Remove the organization repositories. **Use with caution.**
+- **test:** Run all tests and clean up afterwards.
+
+### Usage
+
+To execute a task, use the following command:
+
+```bash
+task <task-name>
+```
+
+### Examples:
+
+- **Build the marvin project:**
+
+```bash
+task marvin
+```
+
+### Viewing Help
+To view available commands and their descriptions:
+
+```bash
+task help
+```
+
+This will display all available tasks with their respective descriptions.
