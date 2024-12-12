@@ -1,19 +1,17 @@
 package cli
 
 import (
-	"dashinette/internals/containerization"
-	"dashinette/internals/logger"
 	"dashinette/internals/traces"
+	"dashinette/pkg/containerization"
 	"dashinette/pkg/github"
+	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
+	"dashinette/pkg/constants/marvin"
 )
-
-const SUBJECT_PATH = "dashes/marvin/README.md"
-const TEMPLATE_REPO = "template-marvin"
 
 func createRepos(participants parser.Participants) {
 	for _, team := range participants.Teams {
-		err := github.CreateRepoFromTemplate(team.Name, TEMPLATE_REPO, true)
+		err := github.CreateRepoFromTemplate(team.Name, marvin.TEMPLATE_REPO, true)
 		if err != nil {
 			logger.Error.Printf("Error creating repo for team %s: %v", team.Name, err)
 		} else {
@@ -36,7 +34,7 @@ func addCollaborators(participants parser.Participants) {
 func cloneRepos(participants parser.Participants) (ok bool) {
 	ok = true
 	for _, team := range participants.Teams {
-		err := github.CloneRepo(team.Name, traces.GetRepoPath(team.Name))
+		err := github.CloneRepo(team.Name, parser.GetRepoPath(team.Name))
 		if err != nil {
 			logger.Error.Printf("Error cloning repo for team %s: %v", team.Name, err)
 			ok = false
@@ -54,8 +52,8 @@ func pushSubjects(participants parser.Participants) {
 	}
 	for _, team := range participants.Teams {
 		err := github.UploadFileToRoot(
-			traces.GetRepoPath(team.Name),
-			[]string{SUBJECT_PATH},
+			parser.GetRepoPath(team.Name),
+			[]string{marvin.SUBJECT_PATH},
 			"add subject",
 			"main",
 			false,
@@ -74,7 +72,7 @@ func evaluateAssignments(participants parser.Participants) {
 		return
 	}
 	for _, team := range participants.Teams {
-		err := containerization.GradeAssignmentInContainer(team, traces.GetRepoPath(team.Name), traces.GetTracesPath(team.Name))
+		err := containerization.GradeAssignmentInContainer(team, parser.GetRepoPath(team.Name), parser.GetTracesPath(team.Name))
 		if err != nil {
 			logger.Error.Printf("Error grading works for team %s: %v", team.Name, err)
 		} else {
@@ -86,10 +84,10 @@ func evaluateAssignments(participants parser.Participants) {
 func pushTraces(participants parser.Participants) {
 	for _, team := range participants.Teams {
 		err := github.UploadFileToRoot(
-			traces.GetRepoPath(team.Name),
+			parser.GetRepoPath(team.Name),
 			append(
-				traces.DeserializeMapsOnly(traces.GetTracesPath(team.Name)),
-				traces.GetTracesPath(team.Name),
+				traces.DeserializeMapsOnly(parser.GetTracesPath(team.Name)),
+				parser.GetTracesPath(team.Name),
 			),
 			"Upload traces",
 			"traces",
@@ -108,7 +106,7 @@ func createResults(participants parser.Participants) {
 	var resultsOpen = make(map[string]traces.Traces)
 
 	for _, team := range participants.Teams {
-		record, err := traces.Deserialize(traces.GetTracesPath(team.Name))
+		record, err := traces.Deserialize(parser.GetTracesPath(team.Name))
 		if err != nil {
 			logger.Error.Printf("Error deserializing traces for team %s: %v", team.Name, err)
 		} else {

@@ -1,7 +1,6 @@
 package github
 
 import (
-	"dashinette/internals/logger"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,7 +35,6 @@ func addFile(repo, filename string) error {
 // Returns an error if the file does not exist, or if the commands fail.
 func UploadFileToRoot(repo string, files []string, commit string, branch string, cleanBranch bool) error {
 	if _, err := os.Stat(repo); os.IsNotExist(err) {
-		logger.Warn.Printf("Repository %s does not exist, cloning", repo)
 		if err := CloneRepo(filepath.Base(repo), repo); err != nil {
 			return fmt.Errorf("failed to clone repo: %w", err)
 		}

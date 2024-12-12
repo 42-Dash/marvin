@@ -9,7 +9,7 @@
 # Executables and object files
 bin/*
 dashinette
-tester
+marvin
 dashes/marvin/**/marvin
 dashes/marvin/**/objs/
 *.o
@@ -22,6 +22,8 @@ dashes/marvin/traces/*
 dashes/marvin/repos/*
 scripts/marvin/maps/analyse/*/results/*.json
 scripts/marvin/maps/analyse/*/results/*.md
+config/participants.json
+config/maps.json
 open_results.json
 rookie_results.json
 app.log

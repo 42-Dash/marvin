@@ -2,7 +2,7 @@ package traces
 
 import (
 	"bytes"
-	"dashinette/internals/logger"
+	"dashinette/pkg/logger"
 	"encoding/json"
 	"fmt"
 	"os"

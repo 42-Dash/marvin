@@ -5,14 +5,13 @@ import (
 	"dashinette/internals/grader/open"
 	"dashinette/internals/grader/rookie"
 	"dashinette/internals/traces"
+	"dashinette/pkg/constants/marvin"
 	"dashinette/pkg/parser"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
-
-const EXECUTABLE_NAME = "marvin"
 
 // Returns true if the file exists.
 func fileExists(path string) bool {
@@ -22,8 +21,8 @@ func fileExists(path string) bool {
 
 // Compiles the project and
 func compileProject(config parser.TesterConfig) error {
-	if fileExists(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME)) {
-		os.Remove(filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME))
+	if fileExists(filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME)) {
+		os.Remove(filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME))
 	}
 
 	if !fileExists(config.Args.RepoPath + "/Makefile") {
@@ -56,12 +55,12 @@ func selectGradingFunction(league string) func(string, string, int) (string, int
 }
 
 func MultistageGraderWithTraces(config parser.TesterConfig) error {
-	_, err := os.Stat(traces.GetTracesPath(config.Args.TeamName))
+	_, err := os.Stat(parser.GetTracesPath(config.Args.TeamName))
 	if err == nil {
-		os.Remove(traces.GetTracesPath(config.Args.TeamName))
+		os.Remove(parser.GetTracesPath(config.Args.TeamName))
 	}
 	tr := traces.NewLogger()
-	defer tr.StoreInFile(traces.GetTracesPathContainerized(config.Args.TeamName))
+	defer tr.StoreInFile(parser.GetTracesPathContainerized(config.Args.TeamName))
 
 	if err := compileProject(config); err != nil {
 		tr.AddCompilation(err.Error())
@@ -73,13 +72,11 @@ func MultistageGraderWithTraces(config parser.TesterConfig) error {
 	var gradingFunction = selectGradingFunction(config.Args.League)
 
 	for _, repo := range config.Maps {
-		fmt.Println("Repo: ", repo)
 		path, res, err := gradingFunction(
-			filepath.Join(config.Args.RepoPath, EXECUTABLE_NAME),
+			filepath.Join(config.Args.RepoPath, marvin.EXECUTABLE_NAME),
 			repo.Path,
 			repo.Timeout,
 		)
-		fmt.Println("Path: ", path)
 		if err == nil {
 			tr.AddStage(repo.Path, res, "OK", path)
 		} else {

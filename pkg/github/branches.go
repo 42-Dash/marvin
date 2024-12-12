@@ -1,7 +1,6 @@
 package github
 
 import (
-	"dashinette/internals/logger"
 	"fmt"
 )
 
@@ -48,9 +47,8 @@ func SwitchEmptyBranch(repoPath string, branch string) (err error) {
 		}
 	}
 
-	logger.Info.Printf("Cleaning branch %s", branch)
-    if err := executeCommand(repoPath, "git", "rm", "-rf", "."); err != nil {
-        return fmt.Errorf("failed to remove tracked files in branch %s: %w", branch, err)
-    }
+	if err := executeCommand(repoPath, "git", "rm", "-rf", "."); err != nil {
+		return fmt.Errorf("failed to remove tracked files in branch %s: %w", branch, err)
+	}
 	return nil
 }

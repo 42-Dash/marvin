@@ -1,34 +1,19 @@
 {
     "teams": [
-		{
-			"name": "The-Avengers0",
-			"members": ["IronMan"],
+        {
+            "name": "The-Avengers",
+            "members": ["IronMan", "Thor777"],
 			"league": "open"
-		},
-		{
-			"name": "The-Avengers1",
-            "members": ["IronMan"],
+        },
+        {
+            "name": "Pirates-of-the-Caribbean",
+            "members": ["jack-sparrow", "wturner"],
 			"league": "open"
-		},
-		{
-			"name": "The-Avengers2",
-			"members": ["IronMan"],
-			"league": "open"
-		},
-		{
-			"name": "The-Avengers3",
-			"members": ["IronMan"],
+        },
+        {
+            "name": "The-Justice-League",
+            "members": ["BatmanIsHere", "SuPeRmAn"],
 			"league": "rookie"
-		},
-		{
-			"name": "The-Avengers4",
-			"members": ["IronMan"],
-			"league": "rookie"
-		},
-		{
-			"name": "The-Avengers5",
-			"members": ["IronMan"],
-			"league": "rookie"
-		}
+        }
     ]
 }

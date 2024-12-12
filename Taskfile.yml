@@ -2,54 +2,37 @@ version: '3'
 
 tasks:
   default:
-    desc: Run the project
+    desc: Run the marvin project
     cmds:
-      - task run
+      - task marvin
+      - ./marvin
 
-  run:
-    desc: Run the project after building
+  marvin:
+    desc: Build the marvin project
     cmds:
-      - task: build
-      - defer: rm -f dashinette
-      - ./dashinette
+      - go build -o marvin cmd/marvin/marvin/main.go
 
-  start-visualiser:
-    desc: Runs the visualiser
-    silent: true
+  marvin-tester:
+    desc: Build the marvin project tester (just for development)
     cmds:
-      - cmd: echo "task start-visualiser FILE=<file>"
-      - go run scripts/start_visualiser/main.go {{.FILE}}
+      - go build -o tester cmd/marvin/tester/main.go
 
-  stop-visualiser:
-    desc: Stops the visualiser
-    cmds:
-      - go run scripts/stop_visualiser/main.go
-
-  build:
-    desc: Build the project
-    cmds:
-      - go build -o dashinette main.go
-
-  build-tester:
-    desc: Build the project
-    cmds:
-      - go build -o tester cmd/tester/main.go
-
-  build-docker:
-    desc: Rebuild the Docker image
+  marvin-docker:
+    desc: Rebuild the Docker image for the marvin project
     cmds:
       - docker build -t dashinette-tester .
 
   clean:
-    desc: Clean the project
+    desc: Clean up the repository
     cmds:
-      - rm -f dashinette tester
+      - rm -f app.log marvin tester
+      - rm -f open_results.json rookie_results.json
       - rm -rf dashes/marvin/repos/*
       - rm -rf dashes/marvin/traces/*
-      - rm -rf open_results.json rookie_results.json
+      - rm -rf bin
 
-  clean-repos:
-    desc: Remove the organization repositories
+  delete-repos:
+    desc: Remove the organization repositories (use with caution)
     cmds:
       - go run scripts/delete_repos/main.go
 
@@ -60,15 +43,15 @@ tasks:
       - go test -count=1 ./internals/grader/open
       - task: clean
 
-  help:
-    silent: true
-    desc: Show this help message
-    cmds:
-      - echo "run          - build and run the project"
-      - echo "build        - build the project"
-      - echo "build-tester - build the tester (just for development)"
-      - echo "build-docker - rebuild the Docker image"
-      - echo "clean        - clean the project"
-      - echo "clean-repos  - remove the organization repositories"
-      - echo "test         - run all the tests"
-      - echo "help         - show this help message"
+    help:
+      silent: true
+      desc: Display available commands
+      cmds:
+        - echo "run          - Build and run the project"
+        - echo "build        - Compile the project"
+        - echo "build-tester - Compile the tester (for development)"
+        - echo "build-docker - Rebuild the Docker image"
+        - echo "clean        - Clean the project environment"
+        - echo "clean-repos  - Remove the organization repositories (use with caution)"
+        - echo "test         - Execute all tests"
+        - echo "help         - Display this help message"

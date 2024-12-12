@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"dashinette/internals/logger"
+	"dashinette/pkg/logger"
 	"dashinette/pkg/parser"
 	"fmt"
 	"log"
@@ -13,8 +13,8 @@ import (
 
 // Constants for the different options in the CLI.
 const (
-	InitializeReposTask         = "Initialize GitHub Organization Repositories"
-	UploadReadmesTask           = "Upload README Files to Repositories"
+	InitializeReposTask         = "Create GitHub Repositories by template"
+	UploadReadmesTask           = "Update README files with Subjects"
 	GrantCollaboratorAccessTask = "Grant Collaborator Write Access"
 	MakeReposReadOnlyTask       = "Configure Repositories as Read-Only"
 	AnalyzeSubmissionsTask      = "Clone and Analyze Submissions to Generate Traces"
