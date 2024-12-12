@@ -9,7 +9,6 @@
 # Executables and object files
 bin/*
 dashinette
-tester
 dashes/marvin/**/marvin
 dashes/marvin/**/objs/
 *.o

@@ -12,6 +12,6 @@ COPY /config/maps.json config/maps.json
 COPY /internals internals
 COPY /dashes/marvin/maps dashes/marvin/maps
 COPY /pkg pkg
-COPY /cmd/tester/main.go main.go
+COPY /cmd/marvin/tester/main.go main.go
 
 RUN go build -o tester .
